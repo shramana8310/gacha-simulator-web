@@ -1,0 +1,193 @@
+{
+    "gacha_simulator" : "ガチャシミュレーター",
+
+    "home" : "ホーム",
+    "tiers": "ティア",
+    "items": "アイテム",
+    "pricing": "価格",
+    "policies": "ポリシー",
+    "plan": "プラン",
+    "review": "レビュー",
+    "results": "結果",
+    "result_details": "結果詳細",
+    "result": "結果",
+
+    "title": "タイトル",
+    "open_menu": "メニューを開く",
+
+    "add": "追加",
+    "select": "選択",
+    "back": "前へ",
+    "execute": "実行",
+    "show": "表示",
+    "copy": "コピー",
+    "close": "閉じる",
+    "retry": "再実行",
+    "previous": "前へ",
+    "next": "次へ",
+    "search": "検索",
+    "proceed": "進む",
+    "help": "ヘルプ",
+    "reload": "リロード",
+
+    "search_items": "アイテム検索",
+    "select_item": "アイテム選択",
+    "select_items": "アイテム選択",
+    "select_tiers": "ティア選択",
+    "items_added": "{{count, number}}件のアイテムを追加しました",
+    "tiers_added": "{{count, number}}件のティアを追加しました",
+
+    "ratio": "割合",
+    "number": "数",
+
+    "customize_items_q": "アイテムをカスタマイズ？",
+    "selected_items": "選択したアイテム",
+    "presets": "プリセット",
+    "price_per_gacha": "単価",
+    "discount_q": "割引？",
+    "discount_trigger": "割引トリガー",
+    "discount_price_per_gacha": "割引後の単価",
+    "discount_price_per_n_gachas_w_val": "{{count, number}}連ガチャの価格：{{price, number}}",
+    "pity_q": "天井？",
+    "pity_trigger": "天井トリガー",
+    "pity_item": "天井アイテム",
+    "budget": "予算",
+    "max_consecutive_gachas": "最大連続ガチャ",
+    "item_goals_q": "目当てのアイテムを設定？",
+    "wanted_items": "目当てのアイテム",
+    "tier_goals_q": "目当てのティアを設定？",
+    "wanted_tiers": "目当てのティア",
+
+    "price_per_gacha_w_val": "単発ガチャの価格：{{price, number}}",
+    "price_per_n_gachas_w_val": "{{count, number}}連ガチャの価格：{{price, number}}",
+    "gacha_count_within_budget": "予算の{{budget, number}}内で{{count, number}}回引けます",
+    "effective_max_gachas": "最大{{count, number}}連ガチャを引きます",
+    "pity_trigger_w_item_name": "{{count, number}}連ガチャで「{{name}}」がもらえます",
+    "items_customized": "カスタマイズされたプール内でアイテムを引きます",
+    "you_want_these_items": "目当てのアイテム：",
+    "you_want_these_tiers": "目当てのティア：",
+
+    "url_copied": "URLをクリップボードにコピーしました",
+    "no_gacha_results_available": "結果が見つかりません",
+    "id": "ID",
+    "goals": "目標",
+    "item_count": "アイテム数",
+    "money_spent": "かかったお金",
+    "time": "時間",
+    "details": "詳細",
+    "public": "公開",
+    "url": "URL",
+    "goals_achieved": "目標達成",
+    "unique_items": "ユニークなアイテム",
+    "item": "アイテム",
+    "count": "数",
+    "percentage": "パーセンテージ",
+
+    "not_found": "お探しのものが見つかりません",
+
+    "formatted_integer": "{{integer, number}}",
+
+    "help_popover": {
+        "tier_ratio": {
+            "header": "ティアの割合",
+            "body": "特定のティアに属するアイテムを引く確率＝ティアの割合÷ティアの割合の合計"
+        },
+        "customize_items": {
+            "header": "アイテムをカスタマイズ",
+            "body": "引けるアイテムをカスタマイズしたい場合に有効にします。無効の場合はティア内のアイテムはランダムに選択されます。"
+        },
+        "add_items": {
+            "header": "アイテムを追加",
+            "body": "アイテムプールに選択したアイテムを追加します"
+        },
+        "item_ratio": {
+            "header": "アイテムの割合",
+            "body": "ティア内のアイテムの割合を入力します"
+        },
+        "presets": {
+            "header": "プリセット",
+            "body": "プリセットを選ぶと各項目は自動的に入力されます"
+        },
+        "price_per_gacha": {
+            "header": "単価",
+            "body": "1回あたりのガチャの価格を入力します"
+        },
+        "discount": {
+            "header": "割引",
+            "body": "連続ガチャで割引を行う場合は有効にします"
+        },
+        "discount_trigger": {
+            "header": "割引トリガー",
+            "body": "割引を行う連続ガチャの回数を入力します"
+        },
+        "discount_price_per_gacha": {
+            "header": "割引後の単価",
+            "body": "割引後の単価を入力します"
+        },
+        "pity": {
+            "header": "天井",
+            "body": "天井システムを有効にします。天井アイテムとは一定回数ガチャを引いた場合に必ずもらえるアイテムです。"
+        },
+        "pity_trigger": {
+            "header": "天井トリガー",
+            "body": "天井アイテムが引ける回数を入力します"
+        },
+        "pity_item": {
+            "header": "天井アイテム",
+            "body": "天井アイテムを選択します"
+        },
+        "budget": {
+            "header": "予算",
+            "body": "予算を入力します。ガチャは予算内で引きます。"
+        },
+        "max_consecutive_gachas": {
+            "header": "最大連続ガチャ回数",
+            "body": "連続ガチャを行う最大の回数を入力します。予算より優先されます。"
+        },
+        "item_goals": {
+            "header": "目当てのアイテムを設定",
+            "body": "目当てのアイテムを設定したい場合に有効にします"
+        },
+        "wanted_items": {
+            "header": "目当てのアイテム",
+            "body": "目当てのアイテムを選択します"
+        },
+        "item_number": {
+            "header": "アイテムの数",
+            "body": "アイテムの数を入力します"
+        },
+        "tier_goals": {
+            "header": "目当てのティアを設定",
+            "body": "目当てのティアを設定したい場合に有効にします"
+        },
+        "wanted_tiers": {
+            "header": "目当てのティア",
+            "body": "目当てのティアを選択します"
+        },
+        "tier_number": {
+            "header": "ティアの数",
+            "body": "ティアの数を入力します"
+        }
+    },
+
+    "error": {
+        "fetch_fail_game_title": "ゲームタイトル情報を読み込めませんでした",
+        "fetch_fail_tier": "ティア情報を読み込めませんでした",
+        "fetch_fail_item_search": "アイテム検索に失敗しました",
+        "fetch_fail_presets": "プリセットを読み込めませんでした。こちらをクリックしてリロードします。",
+        "fetch_fail_results": "結果を読み込めませんでした",
+        "fetch_fail_result": "結果を読み込めませんでした",
+        "fetch_fail_public_switch": "公開設定の切り替えを失敗しました",
+        "fetch_fail_gacha": "ガチャ実行を失敗しました",
+        "url_copy_fail": "URL「{{url}}」をコピーできませんでした",
+        "tiers_empty": "ティアが空です",
+        "tier_ratio_zero": "ティア割合の合計がゼロです",
+        "items_empty": "アイテムが空です",
+        "item_ratio_zero": "アイテム割合の合計がゼロです",
+        "discount_gt_price": "割引後の単価が割引前の単価より高いです",
+        "pity_item_empty": "天井アイテムが選択されていません",
+        "wanted_item_empty": "目当てのアイテムが選択されていません",
+        "wanted_tier_empty": "目当てのティアが選択されていません",
+        "gachas_zero": "引けるガチャの数が実質ゼロです"
+    }
+}

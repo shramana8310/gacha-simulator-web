@@ -1,0 +1,193 @@
+{
+    "gacha_simulator" : "Gacha Simulator",
+
+    "home" : "Home",
+    "tiers": "Tiers",
+    "items": "Items",
+    "pricing": "Pricing",
+    "policies": "Policies",
+    "plan": "Plan",
+    "review": "Review",
+    "results": "Results",
+    "result_details": "Result Details",
+    "result": "Result",
+
+    "title": "Title",
+    "open_menu": "Open menu",
+
+    "add": "Add",
+    "select": "Select",
+    "back": "Back",
+    "execute": "Execute",
+    "show": "Show",
+    "copy": "Copy",
+    "close": "Close",
+    "retry": "Retry",
+    "previous": "Previous",
+    "next": "Next",
+    "search": "Search",
+    "proceed": "Proceed",
+    "help": "Help",
+    "reload": "Reload",
+
+    "search_items": "Search items",
+    "select_item": "Select item",
+    "select_items": "Select items",
+    "select_tiers": "Select tiers",
+    "items_added": "{{count, number}} item(s) added.",
+    "tiers_added": "{{count, number}} tier(s) added.",
+
+    "ratio": "Ratio",
+    "number": "Number",
+
+    "customize_items_q": "Customize items?",
+    "selected_items": "Selected items",
+    "presets": "Presets",
+    "price_per_gacha": "Price per gacha",
+    "discount_q": "Discount?",
+    "discount_trigger": "Discount trigger",
+    "discount_price_per_gacha": "Discounted price per gacha",
+    "discount_price_per_n_gachas_w_val": "Discounted price per {{count, number}} gachas: {{price, number}}",
+    "pity_q": "Pity?",
+    "pity_trigger": "Pity trigger",
+    "pity_item": "Pity item",
+    "budget": "Budget",
+    "max_consecutive_gachas": "Max consecutive gachas",
+    "item_goals_q": "Item goals?",
+    "wanted_items": "Wanted items",
+    "tier_goals_q": "Tier goals?",
+    "wanted_tiers": "Wanted tiers",
+
+    "price_per_gacha_w_val": "Price per gacha: {{price, number}}",
+    "price_per_n_gachas_w_val": "Price per {{count, number}} gachas: {{price, number}}",
+    "gacha_count_within_budget": "You can pull {{count, number}} gachas within your budget {{budget, number}}",
+    "effective_max_gachas": "You will pull maximum of {{count, number}} gachas",
+    "pity_trigger_w_item_name": "{{count, number}} gachas will guarantee {{name}}",
+    "items_customized": "Items will be pulled from within the configured item pool",
+    "you_want_these_items": "You want the following items:",
+    "you_want_these_tiers": "You want the following tiers:",
+
+    "url_copied": "URL copied to clipboard.",
+    "no_gacha_results_available": "No gacha results available",
+    "id": "ID",
+    "goals": "Goals",
+    "item_count": "Item count",
+    "money_spent": "Money spent",
+    "time": "Time",
+    "details": "Details",
+    "public": "Public",
+    "url": "URL",
+    "goals_achieved": "Goals achieved",
+    "unique_items": "Unique items",
+    "item": "Item",
+    "count": "Count",
+    "percentage": "Percentage",
+
+    "not_found": "Not found.",
+
+    "formatted_integer": "{{integer, number}}",
+
+    "help_popover": {
+        "tier_ratio": {
+            "header": "Tier ratio",
+            "body": "The probability of pulling an item that belongs to a given tier will be the ratio of a tier divided by the sum of ratios."
+        },
+        "customize_items": {
+            "header": "Customize items",
+            "body": "Enable to customize which items to be chosen from. A random item will be selected within a tier if disabled."
+        },
+        "add_items": {
+            "header": "Add items",
+            "body": "Select to add items to the item pool."
+        },
+        "item_ratio": {
+            "header": "Item ratio",
+            "body": "Enter the ratio of item within the same tier."
+        },
+        "presets": {
+            "header": "Presets",
+            "body": "Select one of the presets and each field will be entered automatically."
+        },
+        "price_per_gacha": {
+            "header": "Price per gacha",
+            "body": "Enter the price per single gacha."
+        },
+        "discount": {
+            "header": "Discount",
+            "body": "Enable to configure discounted price per multiple gachas."
+        },
+        "discount_trigger": {
+            "header": "Discount trigger",
+            "body": "Enter the number of gachas that will trigger discount."
+        },
+        "discount_price_per_gacha": {
+            "header": "Discounted price per gacha",
+            "body": "Enter the discounted price per gacha."
+        },
+        "pity": {
+            "header": "Pity",
+            "body": "Enable to configure the pity system. A pity item is guaranteed after a certain number of gachas."
+        },
+        "pity_trigger": {
+            "header": "Pity trigger",
+            "body": "Enter the number of gachas that will guarantee a pity item."
+        },
+        "pity_item": {
+            "header": "Pity item",
+            "body": "Select a pity item."
+        },
+        "budget": {
+            "header": "Budget",
+            "body": "Enter the budget. Gachas will be pulled within the budget."
+        },
+        "max_consecutive_gachas": {
+            "header": "Max consecutive gachas",
+            "body": "Enter the maximum number of gachas. This takes precedence over the budget."
+        },
+        "item_goals": {
+            "header": "Item goals",
+            "body": "Enable to configure wanted items."
+        },
+        "wanted_items": {
+            "header": "Wanted items",
+            "body": "Select to add wanted items."
+        },
+        "item_number": {
+            "header": "Number of wanted items",
+            "body": "Enter the number of wanted items."
+        },
+        "tier_goals": {
+            "header": "Tier goals",
+            "body": "Enable to configure wanted tiers."
+        },
+        "wanted_tiers": {
+            "header": "Wanted tiers",
+            "body": "Select to add wanted tiers."
+        },
+        "tier_number": {
+            "header": "Number of wanted tiers",
+            "body": "Enter the number of wanted tiers."
+        }
+    },
+
+    "error": {
+        "fetch_fail_game_title": "Failed to load game title info.",
+        "fetch_fail_tier": "Failed to load tier info.",
+        "fetch_fail_item_search": "Failed to search items.",
+        "fetch_fail_presets": "Failed to load presets. Click to reload.",
+        "fetch_fail_results": "Failed to load results.",
+        "fetch_fail_result": "Failed to load result.",
+        "fetch_fail_public_switch": "Failed to toggle public switch.",
+        "fetch_fail_gacha": "Failed to execute gacha.",
+        "url_copy_fail": "Failed to copy URL {{url}} to clipboard.",
+        "tiers_empty": "Tiers are empty",
+        "tier_ratio_zero": "The sum of tier ratio is zero.",
+        "items_empty": "Items are empty.",
+        "item_ratio_zero": "The sum of item ratio is zero.",
+        "discount_gt_price": "The discounted price per gacha is greater than the price per gacha.",
+        "pity_item_empty": "Pity item is not selected.",
+        "wanted_item_empty": "Wanted item is not selected.",
+        "wanted_tier_empty": "Wanted tier is not selected.",
+        "gachas_zero": "The number of gachas you can pull is effectively zero."
+    }
+}

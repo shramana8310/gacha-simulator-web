@@ -8,5 +8,5 @@ RUN npm run build
 FROM nginx:1.18-alpine
 COPY --from=build /build/build /web/build
 COPY nginx.conf.template /etc/nginx
-EXPOSE 443
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

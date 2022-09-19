@@ -81,7 +81,7 @@ export default function Tier({
           onClick={checked ? onUncheck : onCheck} 
           _hover={{cursor: checkable ? 'pointer' : undefined}}
         >
-          <Image src={imageUrl} />
+          <Image src={imageUrl} loading='lazy' />
         </AspectRatio>
       </Stack>
       {ratioEditable && 

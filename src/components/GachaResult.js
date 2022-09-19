@@ -82,7 +82,7 @@ export default function GachaResult({
             <Tr key={i}>
               <Td>
                 <HStack>
-                  <Image boxSize='60px' src={entry.item.imageUrl} />
+                  <Image boxSize='60px' src={entry.item.imageUrl} loading='lazy' />
                   <Tooltip label={entry.item.name}>
                     <Text>{entry.item.shortName}</Text>
                   </Tooltip>

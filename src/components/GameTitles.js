@@ -35,7 +35,7 @@ const GameTitle = ({
       {...rest}
     >
       <AspectRatio ratio={4 / 3}>
-        <Image src={imageUrl} borderRadius='lg' />
+        <Image src={imageUrl} borderRadius='lg' loading='lazy' />
       </AspectRatio>
       <Heading size='lg' textAlign='center'>{shortName}</Heading>
       <Text fontSize='lg'>{name}</Text>

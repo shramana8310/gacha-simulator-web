@@ -84,7 +84,7 @@ export default function Item({
           onClick={checked ? onUncheck : onCheck} 
           _hover={{cursor: checkable ? 'pointer' : undefined}}
         >
-          <Image src={imageUrl} />
+          <Image src={imageUrl} loading='lazy' />
         </AspectRatio>
       </Stack>
       {ratioEditable && 

@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import gachaRequestFormSlice from './redux/gachaRequestFormSlice';
-import gameTitleSlice from './redux/gameTitleSlice';
+import gachaRequestFormSlice from './utils/gachaRequestFormSlice';
+import gameTitleSlice from './utils/gameTitleSlice';
 
 export default configureStore({
   reducer: {

@@ -43,6 +43,9 @@ export default function Item({
   onNumberChange,
   numberMin,
   numberMax,
+  emphasizeBorder,
+  borderColor,
+  children,
 }) {
   const { t } = useTranslation();
   const itemNameTemplate = <>
@@ -58,7 +61,8 @@ export default function Item({
 
   return (
     <Stack
-      borderWidth='1px' 
+      borderWidth={emphasizeBorder ? '2px' : '1px'} 
+      borderColor={borderColor}
       borderRadius='lg' 
       boxShadow='lg'
       p={2}
@@ -95,7 +99,6 @@ export default function Item({
             onChange={onRatioChange} 
             min={ratioMin} 
             max={ratioMax}
-            allowMouseWheel={true}
           >
             <NumberInputField />
             <NumberInputStepper>
@@ -113,7 +116,6 @@ export default function Item({
             onChange={onNumberChange} 
             min={numberMin} 
             max={numberMax}
-            allowMouseWheel={true}
           >
             <NumberInputField  />
             <NumberInputStepper>
@@ -123,6 +125,7 @@ export default function Item({
           </NumberInput>
         </FormControl>
       }
+      {children}
     </Stack>
   );
 }

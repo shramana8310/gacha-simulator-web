@@ -1,33 +1,58 @@
-import {
-  Button, Flex, HStack, IconButton, Spacer,
-} from "@chakra-ui/react";
+import { Button, Flex, Spacer } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import { FiHelpCircle } from "react-icons/fi";
-import { useDispatch } from "react-redux";
+import { FiChevronLeft, FiChevronRight, FiChevronsRight } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
-import { toggleShowHelp } from "../redux/gachaRequestFormSlice";
+
+export const NavigationButtonTemplate = ({
+  prevBtnLink,
+  prevBtnDisabled,
+  nextBtnLink,
+  nextBtnDisabled,
+  children,
+}) => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  return (
+    <Flex>
+      <Button 
+        variant="ghost" 
+        isDisabled={prevBtnDisabled} 
+        onClick={() => navigate(prevBtnLink)}
+        leftIcon={<FiChevronLeft />}
+      >{t('previous')}</Button>
+      <Spacer />
+      {children}
+      <Spacer />
+      <Button 
+        variant="ghost" 
+        isDisabled={nextBtnDisabled} 
+        onClick={() => navigate(nextBtnLink)}
+        rightIcon={<FiChevronRight />}
+      >{t('next')}</Button>
+    </Flex>
+  );
+};
 
 export default function NavigationButtons({
   prevBtnLink,
   nextBtnLink,
   prevBtnDisabled,
   nextBtnDisabled,
-  nextBtnLabel,
 }) {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  return <Flex>
-    <Button 
-      variant="outline" 
-      isDisabled={prevBtnDisabled} 
-      onClick={() => navigate(prevBtnLink)}
-    >{t('back')}</Button>
-    <Spacer />
-    <HStack>
-      <Button colorScheme="blue" isDisabled={nextBtnDisabled} onClick={() => navigate(nextBtnLink)}>{nextBtnLabel ? nextBtnLabel : t('proceed')}</Button>
-      <IconButton variant="ghost" aria-label={t('help')} icon={<FiHelpCircle />} onClick={() => dispatch(toggleShowHelp())}></IconButton>
-    </HStack>
-    <Spacer />
-  </Flex>;
+  return (
+    <NavigationButtonTemplate
+      prevBtnLink={prevBtnLink}
+      nextBtnLink={nextBtnLink}
+      prevBtnDisabled={prevBtnDisabled}
+      nextBtnDisabled={nextBtnDisabled}
+    >
+      <Button
+        colorScheme="blue"
+        onClick={() => navigate("../review")}
+        rightIcon={<FiChevronsRight />}
+      >{t('review')}</Button>
+    </NavigationButtonTemplate>
+  );
 };

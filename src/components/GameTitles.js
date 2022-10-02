@@ -13,7 +13,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useDispatch } from "react-redux";
-import { cacheGameTitle } from "../redux/gameTitleSlice";
+import { cacheGameTitle } from "../utils/gameTitleSlice";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "react-oauth2-pkce";
 import ReloadButton from "./ReloadButton";
@@ -24,7 +24,6 @@ const GameTitle = ({
   shortName, 
   description, 
   imageUrl,
-  ...rest
 }) => {
   return (
     <Stack
@@ -32,7 +31,6 @@ const GameTitle = ({
       borderRadius='lg' 
       boxShadow='lg'
       p={2}
-      {...rest}
     >
       <AspectRatio ratio={4 / 3}>
         <Image src={imageUrl} borderRadius='lg' loading='lazy' />
@@ -116,7 +114,7 @@ export default function GameTitles() {
     <SimpleGrid columns={{base: 1, md: 2, lg: 2}} spacing={20}>
     {gameTitles.map(gameTitle => 
       <Center key={gameTitle.id}>
-        <Link to={`/gacha/${gameTitle.slug}`} >
+        <Link to={`/gacha/${gameTitle.slug}`}>
           <GameTitle {...gameTitle} />
         </Link>
       </Center>

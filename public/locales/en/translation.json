@@ -11,9 +11,13 @@
     "results": "Results",
     "result_details": "Result Details",
     "result": "Result",
+    "result_list": "Result List",
 
     "title": "Title",
     "open_menu": "Open menu",
+
+    "advanced_settings": "Advanced settings",
+    "advanced_settings_description": "Customize various aspects of your gacha.",
 
     "add": "Add",
     "select": "Select",
@@ -25,10 +29,23 @@
     "retry": "Retry",
     "previous": "Previous",
     "next": "Next",
+    "skip": "Skip",
     "search": "Search",
     "proceed": "Proceed",
     "help": "Help",
     "reload": "Reload",
+    "clear": "Clear",
+    "more": "More",
+    "list": "List",
+    "menu": "Menu",
+    "share": "Share",
+
+    "toggle_public": "Toggle public",
+    "public_result_can_be_shared": "Public results can be shared.",
+    "changed_to_public_result": "Changed to public results.",
+    "changed_to_private_result": "Changed to private results.",
+    "gacha_simulator_shared_result_title": "Gacha simulator results",
+    "gacha_simulator_shared_result_text": "Public URL of gacha simulator results",
 
     "search_items": "Search items",
     "select_item": "Select item",
@@ -47,6 +64,7 @@
     "discount_q": "Discount?",
     "discount_trigger": "Discount trigger",
     "discount_price_per_gacha": "Discounted price per gacha",
+    "discount_price_per_n_gachas": "Discounted price per {{count, number}} gachas",
     "discount_price_per_n_gachas_w_val": "Discounted price per {{count, number}} gachas: {{price, number}}",
     "pity_q": "Pity?",
     "pity_trigger": "Pity trigger",
@@ -58,14 +76,12 @@
     "tier_goals_q": "Tier goals?",
     "wanted_tiers": "Wanted tiers",
 
-    "price_per_gacha_w_val": "Price per gacha: {{price, number}}",
     "price_per_n_gachas_w_val": "Price per {{count, number}} gachas: {{price, number}}",
-    "gacha_count_within_budget": "You can pull {{count, number}} gachas within your budget {{budget, number}}",
-    "effective_max_gachas": "You will pull maximum of {{count, number}} gachas",
-    "pity_trigger_w_item_name": "{{count, number}} gachas will guarantee {{name}}",
+    "gacha_count_within_budget": "Max. gachas within budget",
+    "effective_max_gachas": "Max. number of gachas",
+    "pity_item_w_trigger": "{{count, number}} gachas will guarantee the following item",
     "items_customized": "Items will be pulled from within the configured item pool",
-    "you_want_these_items": "You want the following items:",
-    "you_want_these_tiers": "You want the following tiers:",
+    "max_gachas": "Max. gachas",
 
     "url_copied": "URL copied to clipboard.",
     "no_gacha_results_available": "No gacha results available",
@@ -78,7 +94,7 @@
     "public": "Public",
     "url": "URL",
     "goals_achieved": "Goals achieved",
-    "unique_items": "Unique items",
+    "unique_items": "No. of unique items",
     "item": "Item",
     "count": "Count",
     "percentage": "Percentage",
@@ -86,6 +102,9 @@
     "not_found": "Not found.",
 
     "formatted_integer": "{{integer, number}}",
+    "formatted_percentage": "{{val, number(style: percent; maximumFractionDigits: 2)}}",
+
+    "gacha_result_of_game_title": "Gacha Result of {{gameTitle, string}}",
 
     "help_popover": {
         "tier_ratio": {
@@ -172,6 +191,7 @@
 
     "error": {
         "fetch_fail_game_title": "Failed to load game title info.",
+        "fetch_fail_form_presets": "Failed to load presets.",
         "fetch_fail_tier": "Failed to load tier info.",
         "fetch_fail_item_search": "Failed to search items.",
         "fetch_fail_presets": "Failed to load presets. Click to reload.",
@@ -180,9 +200,10 @@
         "fetch_fail_public_switch": "Failed to toggle public switch.",
         "fetch_fail_gacha": "Failed to execute gacha.",
         "url_copy_fail": "Failed to copy URL {{url}} to clipboard.",
-        "tiers_empty": "Tiers are empty",
+        "tiers_empty": "Tier info is not loaded.",
         "tier_ratio_zero": "The sum of tier ratio is zero.",
-        "items_empty": "Items are empty.",
+        "items_empty": "Items are not selected.",
+        "items_too_large": "The number of items is too large.",
         "item_ratio_zero": "The sum of item ratio is zero.",
         "discount_gt_price": "The discounted price per gacha is greater than the price per gacha.",
         "pity_item_empty": "Pity item is not selected.",

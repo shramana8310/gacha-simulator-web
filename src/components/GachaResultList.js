@@ -1,43 +1,80 @@
 import {
   Stack,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Switch,
-  HStack,
   Text,
   Center,
   useToast,
   Skeleton,
-  Hide,
   Alert,
   AlertIcon,
-  Link,
+  SimpleGrid,
+  UnorderedList,
+  ListItem,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatGroup,
+  Box,
+  Divider,
 } from '@chakra-ui/react'
 import { CheckIcon, NotAllowedIcon } from '@chakra-ui/icons';
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "react-oauth2-pkce";
-import { Link as RouterLink, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ReloadButton from './ReloadButton';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
-import FormTemplate from './FormTemplate';
+import { FormTemplateWrapper } from './FormTemplate';
+import { NavigationButtonTemplate } from './NavigationButtons';
 
-const GachaResultListTemplate = ({isLoaded, children}) => {
+const GachaResultBox = ({gachaResult, ...rest}) => {
+  const { id, goalsAchieved, itemIDs, moneySpent, time } = gachaResult;
   const { t } = useTranslation();
-  return <>
-    <FormTemplate title={t('results')}>
-      <Skeleton isLoaded={isLoaded}>
-        <Stack spacing={5}>
-          {children}
-        </Stack>
-      </Skeleton>
-    </FormTemplate>
-  </>;
+  return (
+    <Box
+      as='button'
+      borderWidth='1px' 
+      borderRadius='lg' 
+      boxShadow='lg'
+      p={3}
+      {...rest}
+    >
+      <Stack spacing={2}>
+        <StatGroup>
+          <Stat>
+            <StatLabel>{t('goals_achieved')}</StatLabel>
+            <StatNumber>
+              {goalsAchieved ? 
+                <CheckIcon color={'green.500'} /> : 
+                <NotAllowedIcon color={'red.500'} />}
+            </StatNumber>
+          </Stat>
+          <Stat>
+            <StatLabel>{t('public')}</StatLabel>
+            <StatNumber>
+              {gachaResult.public ? 
+                <CheckIcon color={'green.500'} /> : 
+                <NotAllowedIcon color={'red.500'} />}
+            </StatNumber>
+          </Stat>
+        </StatGroup>
+        <StatGroup>
+          <Stat>
+            <StatLabel>{t('item_count')}</StatLabel>
+            <StatNumber>{t('formatted_integer', {integer: itemIDs.length})}</StatNumber>
+          </Stat>
+          <Stat>
+            <StatLabel>{t('money_spent')}</StatLabel>
+            <StatNumber>{t('formatted_integer', {integer: moneySpent})}</StatNumber>
+          </Stat>
+        </StatGroup>
+        <Divider />
+        <UnorderedList styleType='none' textAlign={'start'}>
+          <ListItem><Text fontSize='xs' color='gray.500'>{t('id')}: {id}</Text></ListItem>
+          <ListItem><Text fontSize='xs' color='gray.500'>{new Date(time).toLocaleString()}</Text></ListItem>
+        </UnorderedList>
+      </Stack>
+    </Box>
+  );
 };
 
 export default function GachaResultList() {
@@ -45,11 +82,30 @@ export default function GachaResultList() {
   const { gameTitleSlug } = useParams();
   const [ searchParams ] = useSearchParams();
   const [ pagination, setPagination ] = useState();
-  const [ gachaResults, setGachaResults ] = useState();
+  const [ gachaResults, setGachaResults ] = useState([]);
   const [ loaded, setLoaded ] = useState(false);
-  const [ updating, setUpdating ] = useState(false);
   const [ error, setError ] = useState(false);
+  const { nextPageExists, nextPageIndex, prevPageExists, prevPageIndex } = useMemo(() => {
+    if (pagination) {
+      const { pageIndex, pageTotal } = pagination;
+      return {
+        nextPageExists: pageIndex < pageTotal - 1, 
+        nextPageIndex: pageIndex + 1, 
+        prevPageExists: pageIndex > 0, 
+        prevPageIndex: pageIndex - 1,
+      }
+    } else {
+      return {
+        nextPageExists: false, 
+        nextPageIndex: 0, 
+        prevPageExists: false, 
+        prevPageIndex: 0,
+      };
+    }
+  }, [pagination]);
   const toast = useToast();
+  const navigate = useNavigate();
+  const scrollRef = useRef();
   const { t } = useTranslation();
 
   const loadResults = useCallback(() => {
@@ -87,179 +143,51 @@ export default function GachaResultList() {
     });
   }, [authService, gameTitleSlug, searchParams, t, toast]);
 
-  const togglePublic = (gachaResultID, value) => {
-    setUpdating(true);
-    fetch(`/api/gachas/${gachaResultID}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
-        'Accept-Language': i18next.language,
-      },
-      body: JSON.stringify({
-        public: value
-      })
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error();
-      }
-      return response;
-    })
-    .then(() => {
-      const i = gachaResults.findIndex(gachaResult => gachaResult.id === gachaResultID);
-      setUpdating(false);
-      setGachaResults([
-        ...gachaResults.slice(0, i),
-        {
-          ...gachaResults[i],
-          public: value,
-        },
-        ...gachaResults.slice(i+1)
-      ]);
-    })
-    .catch(() => {
-      setUpdating(false);
-      toast({
-        title: t('error.fetch_fail_public_switch'),
-        status: 'error',
-        isClosable: true,
-      });
-    });
-  };
-
-  const copyURL = (gachaResultID) => {
-    var url = `${window.location.origin}/results/${gachaResultID}`;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(url)
-        .then(() => {
-          toast({
-            title: t('url_copied'),
-            status: 'success',
-            isClosable: true,
-          });
-        })
-        .catch(() => {
-          toast({
-            title: t('error.url_copy_fail', { url: url }),
-            status: 'error',
-            isClosable: true,
-          });
-        });
-    } else {
-      toast({
-        title: t('error.url_copy_fail', { url: url }),
-        status: 'error',
-        isClosable: true,
-      });
-    }
-  };
-
   useEffect(() => {
     loadResults();
   }, [loadResults]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, [gachaResults]);
+
   if (error) {
     return (
-      <GachaResultListTemplate isLoaded={loaded}>
+      <FormTemplateWrapper title={t('result_list')} ref={scrollRef}>
         <Center><ReloadButton onClick={loadResults} /></Center>
-      </GachaResultListTemplate>
+      </FormTemplateWrapper>
     );
   }
 
   if (pagination && pagination.count === 0) {
     return (
-      <GachaResultListTemplate isLoaded={loaded}>
+      <FormTemplateWrapper title={t('result_list')} ref={scrollRef}>
         <Alert status='info'>
           <AlertIcon />
           {t('no_gacha_results_available')}
         </Alert>
-      </GachaResultListTemplate>
+      </FormTemplateWrapper>
     );
   }
 
   return (
-    <GachaResultListTemplate isLoaded={loaded}>
-      <TableContainer>
-        <Table size='sm'>
-          <Thead>
-            <Tr>
-              <Th>{t('id')}</Th>
-              <Th textAlign='center'>{t('goals')}</Th>
-              <Hide below='sm'>
-                <Th isNumeric>{t('item_count')}</Th>
-                <Th isNumeric>{t('money_spent')}</Th>
-                <Th>{t('time')}</Th>
-              </Hide>
-              <Th textAlign='center'>{t('details')}</Th>
-              <Th textAlign='center'>{t('public')}</Th>
-              <Th textAlign='center'>{t('url')}</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {gachaResults && gachaResults.map(gachaResult => (
-              <Tr key={gachaResult.id}>
-                <Td>{gachaResult.id}</Td>
-                <Td textAlign='center'>
-                  {gachaResult.goalsAchieved ? 
-                  <CheckIcon color={'green.500'} /> : 
-                  <NotAllowedIcon color={'red.500'} />}
-                </Td>
-                <Hide below='sm'>
-                  <Td isNumeric>{gachaResult.itemIDs.length}</Td>
-                  <Td isNumeric>{t('formatted_integer', {integer: gachaResult.moneySpent})}</Td>
-                  <Td>{new Date(gachaResult.time).toLocaleString()}</Td>
-                </Hide>
-                <Td textAlign='center'>
-                  <Link as={RouterLink} to={`${gachaResult.id}`}>{t('show')}</Link>
-                </Td>
-                <Td textAlign='center'>
-                  <Switch 
-                    size='sm'
-                    isDisabled={updating} 
-                    isChecked={gachaResult.public} 
-                    onChange={e => togglePublic(gachaResult.id, e.target.checked)} 
-                  />
-                </Td>
-                <Td textAlign='center'>
-                  {gachaResult.public ? 
-                  <Link onClick={e => copyURL(gachaResult.id)}>{t('copy')}</Link>
-                  : 
-                  <Text>N/A</Text>}
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </TableContainer>
-      <Center>
-        <HStack>
-          {pagination && 
-          [...Array(pagination.pageTotal).keys()]
-          .map(i => {
-            const span = 5;
-            const floor = pagination.pageIndex - (span / 2);
-            const ceil = pagination.pageIndex + (span / 2);
-            if ((floor < i && i < ceil) || i === 0 || i === pagination.pageTotal-1) {
-              return i;
-            } else if (i >= ceil) {
-              return -1;  // ellipsis
-            } else {
-              return -2;  // ellipsis
-            }
-          })
-          .filter((value, index, arr) => arr.indexOf(value) === index)
-          .map(i => {
-            if (i < 0) {
-              return <Text key={i}>...</Text>;
-            } else if (i === pagination.pageIndex) {
-              return <Text color='blue.500' key={i}>{i+1}</Text>
-            } else {
-              return <Link as={RouterLink} to={`?pageIndex=${i}`} key={i}><Text>{i+1}</Text></Link>;
-            }
-          })}
-        </HStack>
-      </Center>
-    </GachaResultListTemplate>
+    <FormTemplateWrapper title={t('result_list')} ref={scrollRef}>
+      <Skeleton isLoaded={loaded}>
+        <SimpleGrid columns={{base: 1, md: 2, lg: 2}} spacing={5}>
+          {gachaResults.map((gachaResult) => (
+            <GachaResultBox key={gachaResult.id} gachaResult={gachaResult} onClick={() => navigate(`./${gachaResult.id}`)} />
+          ))}
+        </SimpleGrid>
+      </Skeleton>
+      <Divider />
+      <NavigationButtonTemplate 
+        nextBtnDisabled={!nextPageExists}
+        nextBtnLink={`?pageIndex=${nextPageIndex}`}
+        prevBtnDisabled={!prevPageExists}
+        prevBtnLink={`?pageIndex=${prevPageIndex}`}
+      />
+    </FormTemplateWrapper>
   );
 }

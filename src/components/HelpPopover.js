@@ -1,7 +1,7 @@
 import {
   Box,
-  Button,
   Flex,
+  IconButton,
   Popover, 
   PopoverArrow, 
   PopoverBody, 
@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
   Spacer,
 } from "@chakra-ui/react";
-import { useTranslation } from "react-i18next";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 export default function HelpPopover({
   isOpen,
@@ -25,7 +25,6 @@ export default function HelpPopover({
   onNextBtnClick,
   children,
 }) {
-  const { t } = useTranslation();
   return <>
     <Popover isOpen={isOpen}>
       <PopoverTrigger>
@@ -38,9 +37,9 @@ export default function HelpPopover({
         <PopoverBody>{body}</PopoverBody>
         <PopoverFooter>
           <Flex>
-            <Button isDisabled={isPrevBtnDisabled} onClick={onPrevBtnClick}>{t('previous')}</Button>
+            <IconButton aria-label='previous' icon={<FiChevronLeft />} isDisabled={isPrevBtnDisabled} onClick={onPrevBtnClick} />
             <Spacer />
-            <Button isDisabled={isNextBtnDisabled} onClick={onNextBtnClick}>{t('next')}</Button>
+            <IconButton aria-label='previous' icon={<FiChevronRight />} isDisabled={isNextBtnDisabled} onClick={onNextBtnClick} />
           </Flex>
         </PopoverFooter>
       </PopoverContent>

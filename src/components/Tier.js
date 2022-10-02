@@ -41,6 +41,7 @@ export default function Tier({
   onNumberChange,
   numberMin,
   numberMax,
+  children,
 }) {
   const { t } = useTranslation();
 
@@ -92,7 +93,6 @@ export default function Tier({
             onChange={onRatioChange} 
             min={ratioMin} 
             max={ratioMax}
-            allowMouseWheel={true}
           >
             <NumberInputField />
             <NumberInputStepper>
@@ -110,7 +110,6 @@ export default function Tier({
             onChange={onNumberChange} 
             min={numberMin} 
             max={numberMax}
-            allowMouseWheel={true}
           >
             <NumberInputField  />
             <NumberInputStepper>
@@ -120,6 +119,7 @@ export default function Tier({
           </NumberInput>
         </FormControl>
       }
+      {children}
     </Stack>
   );
 }

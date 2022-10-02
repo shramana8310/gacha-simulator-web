@@ -11,9 +11,13 @@
     "results": "결과",
     "result_details": "상세결과",
     "result": "결과",
+    "result_list": "결과 리스트",
 
     "title": "타이틀",
     "open_menu": "메뉴 열기",
+
+    "advanced_settings": "고급 설정",
+    "advanced_settings_description": "각종 상세 설정을 행합니다.",
 
     "add": "추가",
     "select": "선택",
@@ -25,10 +29,23 @@
     "retry": "재실행",
     "previous": "이전으로",
     "next": "다음으로",
+    "skip": "건너뛰기",
     "search": "검색",
     "proceed": "진행하기",
     "help": "도움말",
     "reload": "리로드",
+    "clear": "클리어",
+    "more": "더 보기",
+    "list": "리스트",
+    "menu": "메뉴",
+    "share": "공유",
+
+    "toggle_public": "공개설정전환",
+    "public_result_can_be_shared": "공개된 결과는 타인에게 공유할 수 있습니다.",
+    "changed_to_public_result": "공개된 결과로 변경했습니다.",
+    "changed_to_private_result": "비공개 결과로 변경했습니다.",
+    "gacha_simulator_shared_result_title": "가챠 시뮬레이터 결과",
+    "gacha_simulator_shared_result_text": "가챠 시뮬레이터 결과의 공개 URL",
 
     "search_items": "아이템 검색",
     "select_item": "아이템 선택",
@@ -38,7 +55,7 @@
     "tiers_added": "{{count, number}}건의 티어를 추가했습니다",
 
     "ratio": "비율",
-    "number": "수",
+    "number": "개수",
 
     "customize_items_q": "아이템 커스터마이즈?",
     "selected_items": "선택한 아이템",
@@ -47,6 +64,7 @@
     "discount_q": "할인?",
     "discount_trigger": "할인 트리거",
     "discount_price_per_gacha": "할인후 단가",
+    "discount_price_per_n_gachas": "{{count, number}}연가챠 가격",
     "discount_price_per_n_gachas_w_val": "{{count, number}}연가챠 가격: {{price, number}}",
     "pity_q": "천장?",
     "pity_trigger": "천장 트리거",
@@ -58,14 +76,12 @@
     "tier_goals_q": "목표 티어를 설정?",
     "wanted_tiers": "목표 티어",
 
-    "price_per_gacha_w_val": "단발 가챠 가격: {{price, number}}",
     "price_per_n_gachas_w_val": "{{count, number}}연가챠 가격: {{price, number}}",
-    "gacha_count_within_budget": "예산 {{budget, number}}내로 {{count, number}}회 뽑을 수 있습니다",
-    "effective_max_gachas": "최대 {{count, number}}연가챠를 뽑습니다",
-    "pity_trigger_w_item_name": "{{count, number}}연가챠로 {{name}} 확정",
+    "gacha_count_within_budget": "예산내 최대 뽑기 횟수",
+    "effective_max_gachas": "최대 뽑기 횟수",
+    "pity_item_w_trigger": "{{count, number}}연가챠로 이하의 아이템 확정",
     "items_customized": "커스텀 풀 내에서 아이템을 뽑습니다",
-    "you_want_these_items": "목표 아이템:",
-    "you_want_these_tiers": "목표 티어:",
+    "max_gachas": "최대 횟수",
 
     "url_copied": "URL을 클립보드에 복사했습니다",
     "no_gacha_results_available": "결과를 찾을 수 없습니다",
@@ -78,7 +94,7 @@
     "public": "공개",
     "url": "URL",
     "goals_achieved": "목표달성",
-    "unique_items": "고유 아이템",
+    "unique_items": "고유 아이템 수",
     "item": "아이템",
     "count": "수",
     "percentage": "퍼센트",
@@ -86,6 +102,9 @@
     "not_found": "항목을 찾을 수 없습니다",
 
     "formatted_integer": "{{integer, number}}",
+    "formatted_percentage": "{{val, number(style: percent; maximumFractionDigits: 2)}}",
+
+    "gacha_result_of_game_title": "{{gameTitle, string}} 가챠 결과",
 
     "help_popover": {
         "tier_ratio": {
@@ -172,6 +191,7 @@
 
     "error": {
         "fetch_fail_game_title": "게임 타이틀 정보를 읽을 수 없습니다.",
+        "fetch_fail_form_presets": "프리셋을 읽을 수 없습니다.",
         "fetch_fail_tier": "티어 정보를 읽을 수 없습니다.",
         "fetch_fail_item_search": "아이템 검색에 실패했습니다.",
         "fetch_fail_presets": "프리셋을 읽을 수 없습니다. 여기를 클릭해서 리로드합니다.",
@@ -180,14 +200,15 @@
         "fetch_fail_public_switch": "공개 설정 변경을 실패했습니다.",
         "fetch_fail_gacha": "가챠 실행을 실패했습니다.",
         "url_copy_fail": "URL {{url}} 을 복사할 수 없습니다.",
-        "tiers_empty": "티어가 비어있습니다.",
+        "tiers_empty": "티어 정보가 로드되지 않았습니다..",
         "tier_ratio_zero": "티어 비율의 합계가 0 입니다.",
-        "items_empty": "아이템이 비어있습니다.",
+        "items_empty": "아이템이 선택되지 않았습니다.",
+        "items_too_large": "아이템 수가 너무 많습니다.",
         "item_ratio_zero": "아이템 비율의 합계가 0 입니다.",
         "discount_gt_price": "할인후 단가가 할인전 단가보다 비쌉니다.",
         "pity_item_empty": "천장 아이템이 선택되지 않았습니다.",
         "wanted_item_empty": "목표 아이템이 선택되지 않았습니다.",
         "wanted_tier_empty": "목표 티어가 선택되지 않았습니다.",
-        "gachas_zero": "뽑을 수 있는 가챠가 실질적으로 0 입니다."
+        "gachas_zero": "뽑을 수 있는 가챠 횟수가 실질적으로 0 입니다."
     }
 }

@@ -1,10 +1,10 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { initializeGachaRequestForm } from "./gachaRequestFormSlice";
 
-export default function useGachaRequestForm() {
+export const useGachaRequestForm = () => {
   const { gameTitleSlug } = useParams();
   let { gachaRequestFormMap } = useSelector((state) => state.gachaRequestForm);
   const dispatch = useDispatch();
@@ -38,6 +38,58 @@ export default function useGachaRequestForm() {
     return countWithinBudget < gachaRequestForm.plan.maxConsecutiveGachas ? countWithinBudget : gachaRequestForm.plan.maxConsecutiveGachas;
   }, [gachaRequestForm, countWithinBudget]);
 
+  const tierEntries = useMemo(() => {
+    const filteredTiers = gachaRequestForm.customizeItems ? 
+      gachaRequestForm.tiers.filter(tier => gachaRequestForm.items.some(item => item.tier.id === tier.id)) : 
+      gachaRequestForm.tiers;
+    const tierRatioSum = filteredTiers.reduce((prev, tier) => prev + tier.ratio, 0);
+    return filteredTiers.map(tier => ({
+      tier: tier,
+      tierRatioSum: tierRatioSum,
+      percentage: tier.ratio / tierRatioSum,
+    }));
+  }, [gachaRequestForm]);
+
+  const filteredWantedItems = useMemo(() => {
+    return gachaRequestForm.customizeItems ? 
+      gachaRequestForm.plan.wantedItems.filter(wantedItem => gachaRequestForm.items.some(item => item.id === wantedItem.id)) : 
+      gachaRequestForm.plan.wantedItems;
+  }, [gachaRequestForm]);
+
+  const effectiveItemGoals = useMemo(() => {
+    return filteredWantedItems.length === 0 ? false : gachaRequestForm.plan.itemGoals;
+  }, [filteredWantedItems, gachaRequestForm]);
+
+  const filteredWantedTiers = useMemo(() => {
+    return gachaRequestForm.customizeItems ? 
+      gachaRequestForm.plan.wantedTiers.filter(wantedTier => gachaRequestForm.items.some(item => item.tier.id === wantedTier.id)) :
+      gachaRequestForm.plan.wantedTiers;
+  }, [gachaRequestForm]);
+
+  const effectiveTierGoals = useMemo(() => {
+    return filteredWantedTiers.length === 0 ? false : gachaRequestForm.plan.tierGoals;
+  }, [filteredWantedTiers, gachaRequestForm]);
+
+  const treeMapData = useMemo(() => {
+    if (gachaRequestForm.customizeItems) {
+      return tierEntries.map(tierEntry => ({
+          name: tierEntry.tier.shortName,
+          children: gachaRequestForm.items.filter(item => item.tier.id === tierEntry.tier.id)
+            .map((item, _, filteredItems) => ({
+              name: item.shortName,
+              ratio: (item.ratio / filteredItems.reduce((prev, item) => prev + item.ratio, 0)) * tierEntry.percentage,
+            }))
+        }))
+        .filter(tierEntry => tierEntry.children.length > 0);
+    } else {
+      return tierEntries.map(tierEntry => ({
+        name: tierEntry.tier.shortName,
+        ratio: tierEntry.tier.ratio,
+      }));
+    }
+    
+  }, [tierEntries, gachaRequestForm]);
+
   const validationErrors = useMemo(() => {
     const errors = [];
     if (gachaRequestForm.tiers.length === 0) {
@@ -49,6 +101,9 @@ export default function useGachaRequestForm() {
     if (gachaRequestForm.customizeItems) {
       if (gachaRequestForm.items.length === 0) {
         errors.push({page: "items", message: t('error.items_empty')});
+      }
+      if (gachaRequestForm.items.length > 50) {
+        errors.push({page: "items", message: t('error.items_too_large')});
       }
       if (gachaRequestForm.items.reduce((prev, item) => prev + item.ratio, 0) === 0) {
         errors.push({page: "items", message: t('error.item_ratio_zero')});
@@ -92,5 +147,78 @@ export default function useGachaRequestForm() {
     validationErrors, 
     countWithinBudget, 
     effectiveMaxConsecutiveGachas,
+    tierEntries,
+    filteredWantedItems,
+    effectiveItemGoals,
+    filteredWantedTiers,
+    effectiveTierGoals,
+    treeMapData,
   };
-}
+};
+
+export const useGachaResultShareCallbacks = ({
+  gachaResult, 
+  authService, 
+  i18next, 
+  setUpdating, 
+  setGachaResult, 
+  toast,
+  t,
+}) => {
+  const togglePublic = useCallback(() => {
+    setUpdating(true);
+    return fetch(`/api/gachas/${gachaResult.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Accept-Language': i18next.language,
+      },
+      body: JSON.stringify({
+        public: !gachaResult.public,
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error();
+      }
+      return response;
+    })
+    .then(() => {
+      setUpdating(false);
+      setGachaResult({
+        ...gachaResult,
+        public: !gachaResult.public,
+      });
+      toast({
+        title: !gachaResult.public ? t('changed_to_public_result') : t('changed_to_private_result'),
+        status: 'success',
+        isClosable: true,
+      });
+    })
+    .catch(() => {
+      setUpdating(false);
+      toast({
+        title: t('error.fetch_fail_public_switch'),
+        status: 'error',
+        isClosable: true,
+      });
+    });
+  }, [gachaResult, authService, i18next, setUpdating, setGachaResult, toast, t]);
+  const shareGacha = useCallback(() => {
+    const share = () => navigator.share({
+      title: t('gacha_simulator_shared_result_title'),
+      text: t('gacha_simulator_shared_result_text'), 
+      url: `${window.location.origin}/results/${gachaResult.id}`,
+    });
+    if (!gachaResult.public) {
+      togglePublic().then(share);
+    } else {
+      share();
+    }
+  }, [gachaResult, togglePublic, t]);
+  return {
+    togglePublic,
+    shareGacha,
+  };
+};

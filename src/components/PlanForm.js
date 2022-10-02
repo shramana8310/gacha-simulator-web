@@ -16,6 +16,7 @@ import {
   useDisclosure,
   ScaleFade,
   useToast,
+  Divider,
 } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,17 +38,17 @@ import {
   setTierGoals, 
   setWantedItemNumber, 
   setWantedTierNumber, 
-} from '../redux/gachaRequestFormSlice';
+} from '../utils/gachaRequestFormSlice';
 import Item from './Item';
 import Tier from './Tier';
 import ItemDrawer from './ItemDrawer';
 import TierDrawer from './TierDrawer';
-import useGachaRequestForm from '../redux/useGachaRequestForm';
+import { useGachaRequestForm } from '../utils/gachaHooks';
 import HelpPopover from './HelpPopover';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
 import { useAuth } from 'react-oauth2-pkce';
-import FormTemplate from './FormTemplate';
+import { FormTemplateWrapper } from './FormTemplate';
 import WarnAlert from './WarnAlert';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -103,6 +104,7 @@ export default function PlanForm() {
       return planHelpIndex;
     }  
   }, [planHelpIndex, gachaRequestForm, filteredWantedTiers, filteredWantedItems]);
+  const scrollRef = useRef();
   const { t } = useTranslation();
 
   const loadPlanPresets = useCallback(() => {
@@ -154,8 +156,14 @@ export default function PlanForm() {
     }
   }, [gachaRequestForm.planPresetsLoaded, loadPlanPresets]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, []);
+
   return (
-    <FormTemplate title={t('plan')}>
+    <FormTemplateWrapper title={t('plan')} showHelpIcon={true} ref={scrollRef}>
       <ValidationErrorAlerts validationErrors={validationErrors} pageFilter="plan" />
       {gachaRequestForm.planPresetsError && <WarnAlert onClick={loadPlanPresets}>{t('error.fetch_fail_presets')}</WarnAlert>}
       <Stack spacing={5}>
@@ -226,7 +234,6 @@ export default function PlanForm() {
               }))}
               min={0}
               max={10000000}
-              allowMouseWheel={true}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -259,7 +266,6 @@ export default function PlanForm() {
               }))}
               min={0}
               max={1000}
-              allowMouseWheel={true}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -520,7 +526,8 @@ export default function PlanForm() {
         }
 
       </Stack>
-      <NavigationButtons prevBtnLink="../policies" nextBtnLink="../review" />
-    </FormTemplate>
+      <Divider />
+      <NavigationButtons prevBtnLink="../policies" nextBtnDisabled />
+    </FormTemplateWrapper>
   );
 }

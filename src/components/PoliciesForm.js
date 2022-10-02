@@ -16,19 +16,21 @@ import {
   Center,
   useDisclosure,
   ScaleFade,
+  Text,
+  Divider,
 } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { setPity, setPityItem, setPityTrigger, setPolicies, setPoliciesHelpIndex, setPoliciesPresets, setPoliciesPresetsError, setPoliciesPresetsLoaded, setShowHelp } from '../redux/gachaRequestFormSlice';
+import { setPity, setPityItem, setPityTrigger, setPolicies, setPoliciesHelpIndex, setPoliciesPresets, setPoliciesPresetsError, setPoliciesPresetsLoaded, setShowHelp } from '../utils/gachaRequestFormSlice';
 import Item from './Item';
-import useGachaRequestForm from '../redux/useGachaRequestForm';
+import { useGachaRequestForm } from '../utils/gachaHooks';
 import ItemDrawer from './ItemDrawer';
 import HelpPopover from './HelpPopover';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
 import { useAuth } from 'react-oauth2-pkce';
-import FormTemplate from './FormTemplate';
+import { FormTemplateWrapper } from './FormTemplate';
 import WarnAlert from './WarnAlert';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -65,6 +67,7 @@ export default function PoliciesForm() {
       return policiesHelpIndex;
     }  
   }, [policiesHelpIndex, gachaRequestForm]);
+  const scrollRef = useRef();
   const { t } = useTranslation();
 
   const loadPoliciesPresets = useCallback(() => {
@@ -116,8 +119,14 @@ export default function PoliciesForm() {
     }
   }, [gachaRequestForm.policiesPresetsLoaded, loadPoliciesPresets]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, []);
+
   return (
-    <FormTemplate title={t('policies')}>
+    <FormTemplateWrapper title={t('policies')} showHelpIcon={true} ref={scrollRef}>
       <ValidationErrorAlerts validationErrors={validationErrors} pageFilter="policies" />
       {gachaRequestForm.policiesPresetsError && <WarnAlert onClick={loadPoliciesPresets}>{t('error.fetch_fail_presets')}</WarnAlert>}
       <Stack spacing={5}>
@@ -208,8 +217,7 @@ export default function PoliciesForm() {
                   value: value || 0,
                 }))}
                 min={0}
-                max={10000}
-                allowMouseWheel={true}
+                max={1000}
               >
                 <NumberInputField />
                 <NumberInputStepper>
@@ -246,19 +254,17 @@ export default function PoliciesForm() {
               </HelpPopover>
             </Flex>
             {gachaRequestForm.policies.pity && pityItem &&
-              <>
-                <Center>
-                  <Box w='xs'>
-                    <ScaleFade in={true} initialScale={0.9}>
-                      <Item 
-                        {...pityItem} 
-                        tierName={pityItem.tier.shortName} 
-                      />
-                    </ScaleFade>
-                  </Box>
-                </Center>
-              </>
-            }
+              <Center>
+                <Box w='xs'>
+                  <ScaleFade in={true} initialScale={0.9}>
+                    <Item 
+                      {...pityItem} 
+                      tierName={pityItem.tier.shortName}>
+                      <Text>{pityItem.name}</Text>
+                    </Item>
+                  </ScaleFade>
+                </Box>
+              </Center>}
           </FormControl>
 
           <ItemDrawer
@@ -278,7 +284,8 @@ export default function PoliciesForm() {
         }
 
       </Stack>
+      <Divider />
       <NavigationButtons prevBtnLink="../pricing" nextBtnLink="../plan" />
-    </FormTemplate>
+    </FormTemplateWrapper>
   );
 }

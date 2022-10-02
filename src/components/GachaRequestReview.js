@@ -1,25 +1,41 @@
 import { 
   Box, 
   SimpleGrid, 
-  ListItem,
-  UnorderedList,
   Stack,
   Button,
-  useDisclosure,
   Flex,
   Spacer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  useToast,
+  Stat,
+  StatLabel,
+  StatNumber,
+  StatHelpText,
+  Text,
+  Divider,
+  Grid,
+  GridItem,
+  Center,
 } from '@chakra-ui/react'
-import { ResponsiveSunburst } from '@nivo/sunburst'
+import { ResponsiveContainer, Treemap } from 'recharts';
 import i18next from 'i18next';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oauth2-pkce';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import useGachaRequestForm from '../redux/useGachaRequestForm';
-import FormTemplate from './FormTemplate';
-import GachaResultModal from './GachaResultModal';
+import { useGachaRequestForm, useGachaResultShareCallbacks } from '../utils/gachaHooks';
+import { FormTemplateWrapper } from './FormTemplate';
+import GachaResult from './GachaResult';
+import Item from './Item';
+import Tier from './Tier';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
+import CustomTreemapRect from './CustomTreemapRect';
+import { FiChevronLeft, FiEye, FiList, FiPlay, FiRepeat, FiShare2 } from 'react-icons/fi';
+import { ChevronDownIcon } from '@chakra-ui/icons';
 
 export default function GachaRequestReview() {
   const { authService } = useAuth();
@@ -31,14 +47,22 @@ export default function GachaRequestReview() {
     validationErrors, 
     countWithinBudget, 
     effectiveMaxConsecutiveGachas,
+    tierEntries,
+    filteredWantedItems,
+    effectiveItemGoals,
+    filteredWantedTiers,
+    effectiveTierGoals,
+    treeMapData,
   } = useGachaRequestForm();
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [gachaResult, setGachaResult] = useState();
   const [gachaExecuting, setGachaExecuting] = useState(false);
-  const [error, setError] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const toast = useToast();
+  const scrollRef = useRef();
   const { t } = useTranslation();
   
   const gameTitle = gameTitleCache[gameTitleSlug];
+
   const executeGacha = () => {
     setGachaExecuting(true);
     fetch(`/api/gachas`, {
@@ -50,11 +74,9 @@ export default function GachaRequestReview() {
       },
       body: JSON.stringify({
         gameTitle: gameTitle,
-        tiers: gachaRequestForm.tiers
-          .map(tier => ({
+        tiers: gachaRequestForm.tiers.map(tier => ({
             ...tier,
-            items: gachaRequestForm.customizeItems ? gachaRequestForm.items
-              .filter(item => item.tier.id === tier.id)
+            items: gachaRequestForm.customizeItems ? gachaRequestForm.items.filter(item => item.tier.id === tier.id)
               .map(item => ({
                 id: item.id,
                 ratio: item.ratio,
@@ -64,7 +86,13 @@ export default function GachaRequestReview() {
         itemsIncluded: gachaRequestForm.customizeItems,
         pricing: gachaRequestForm.pricing,
         policies: gachaRequestForm.policies,
-        plan: gachaRequestForm.plan,
+        plan: {
+          ...gachaRequestForm.plan,
+          itemGoals: effectiveItemGoals,
+          wantedItems: filteredWantedItems,
+          tierGoals: effectiveTierGoals,
+          wantedTiers: filteredWantedTiers,
+        },
       }),
     })
     .then(response => {
@@ -76,130 +104,192 @@ export default function GachaRequestReview() {
     .then(gachaResult => {
       setGachaResult(gachaResult);
       setGachaExecuting(false);
-      setError(false);
+      if (scrollRef.current) {
+        scrollRef.current.scrollIntoView({behavior: 'smooth'});
+      }
     })
     .catch(() => {
       setGachaExecuting(false);
-      setError(true);
+      toast({
+        title: t('error.fetch_fail_gacha'),
+        status: 'error',
+        isClosable: true,
+      });
     });
   };
 
+  const { togglePublic, shareGacha } = useGachaResultShareCallbacks({
+    authService,
+    gachaResult,
+    i18next,
+    setGachaResult,
+    setUpdating,
+    toast,
+    t,
+  });
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, []);
+
+  if (gachaResult) {
+    const menu = <Menu>
+                  <MenuButton as={Button} isLoading={gachaExecuting || updating} rightIcon={<ChevronDownIcon />}>
+                    {t('menu')}
+                  </MenuButton>
+                  <MenuList>
+                    <MenuItem 
+                      onClick={executeGacha}
+                      icon={<FiRepeat />}
+                    >{t('retry')}</MenuItem>
+                    <MenuItem 
+                      onClick={togglePublic}
+                      icon={<FiEye />}
+                    >{t('toggle_public')}</MenuItem>
+                    <MenuItem 
+                      onClick={shareGacha}
+                      icon={<FiShare2 />}
+                    >{t('share')}</MenuItem>
+                    <MenuItem 
+                      onClick={() => navigate("../results")}
+                      icon={<FiList />}
+                    >{t('result_list')}</MenuItem>
+                    <MenuItem 
+                      onClick={() => setGachaResult(null)}
+                      icon={<FiChevronLeft />}
+                    >{t('back')}</MenuItem>
+                  </MenuList>
+                </Menu>;
+    return <>
+      <FormTemplateWrapper 
+        ref={scrollRef} 
+        title={t('result')} 
+        menu={menu}
+      >
+        <GachaResult gachaResult={gachaResult} showConfetti={true} showPublicStat={true} />
+        <Divider />
+        <Flex>
+          <Button 
+            variant="ghost" 
+            onClick={() => setGachaResult(null)}
+            leftIcon={<FiChevronLeft />}
+          >{t('back')}</Button>
+          <Spacer />
+          <Button 
+            isLoading={gachaExecuting || updating}
+            colorScheme="green"
+            isDisabled={validationErrors.length > 0} 
+            onClick={executeGacha}
+            leftIcon={<FiRepeat />}
+          >{t('retry')}</Button>
+          <Spacer />
+          {menu}
+        </Flex>
+      </FormTemplateWrapper>
+    </>;
+  }
+
   return <>
-    <FormTemplate title={t('review')}>
+    <FormTemplateWrapper ref={scrollRef} title={t('review')}>
       <ValidationErrorAlerts validationErrors={validationErrors} link={true} />
       {validationErrors.length === 0 && 
-      <SimpleGrid columns={{base: 1, md: 2}} spacing={2}>
-        <Box height='400px'>
-          <ResponsiveSunburst
-            data={{
-              id: 'tierItemSunburstChart',
-              value: 0,
-              children: gachaRequestForm.tiers.map(tier => ({
-                ...tier,
-                id: tier.shortName,
-                value: gachaRequestForm.customizeItems ? undefined : tier.ratio,
-                children: gachaRequestForm.customizeItems ? gachaRequestForm.items
-                  .filter(item => item.tier.id === tier.id)
-                  .map((item, _, filteredItems) => ({
-                    ...item,
-                    id: item.shortName,
-                    value: (item.ratio / filteredItems.reduce((prev, item) => prev + item.ratio, 0)) * (tier.ratio / gachaRequestForm.tiers.reduce((prev, tier) => prev + tier.ratio, 0)),
-                  })) : [],
-              }))
-            }}
-            theme={{ tooltip: { container: { color: '#333' } } }}
-            cornerRadius={2}
-            borderColor={{ theme: 'background' }}
-            colors={{ scheme: 'pastel2' }}
-            childColor={{
-              from: 'color',
-              modifiers: [
-                [
-                  'brighter',
-                  0.2
-                ]
-              ]
-            }}
-            enableArcLabels={true}
-            arcLabel={node => `${node.id}: ${node.formattedValue}`}
-            arcLabelsSkipAngle={10}
-          />
-        </Box>
-        <Stack justify='center'>
-          <Box>
-            <UnorderedList>
-              <ListItem>{t('price_per_gacha_w_val', {
-                price: gachaRequestForm.pricing.pricePerGacha
-              })}</ListItem>
-              {gachaRequestForm.pricing.discount && 
-                <>
-                  <ListItem>{t('price_per_n_gachas_w_val', {
-                    count: gachaRequestForm.pricing.discountTrigger,
-                    price: gachaRequestForm.pricing.discountedPricePerGacha * gachaRequestForm.pricing.discountTrigger
-                  })}</ListItem>
-                </>
-              }
-              {countWithinBudget >= 0 && <ListItem>{t('gacha_count_within_budget', {
-                count: countWithinBudget,
-                budget: gachaRequestForm.plan.budget
-              })}</ListItem>}
-              <ListItem>{t('effective_max_gachas', {
-                count: effectiveMaxConsecutiveGachas
-              })}</ListItem>
-              {gachaRequestForm.policies.pity && gachaRequestForm.policies.pityItem &&
-                <ListItem>{t('pity_trigger_w_item_name', {
-                  count: gachaRequestForm.policies.pityTrigger,
-                  name: gachaRequestForm.policies.pityItem.shortName
-                })}</ListItem>
-              }
-              {gachaRequestForm.customizeItems &&
-                <ListItem>{t('items_customized')}</ListItem>
-              }
-              {gachaRequestForm.plan.itemGoals && 
-              <>
-                <ListItem>{t('you_want_these_items')}</ListItem>
-                <UnorderedList>
-                  {gachaRequestForm.plan.wantedItems.map(wantedItem => (
-                    <ListItem key={wantedItem.id}>{wantedItem.shortName}: {wantedItem.number}</ListItem>
-                  ))}
-                </UnorderedList>
-              </>
-              }
-              {gachaRequestForm.plan.tierGoals && 
-              <>
-                <ListItem>{t('you_want_these_tiers')}</ListItem>
-                <UnorderedList>
-                  {gachaRequestForm.plan.wantedTiers.map(wantedTier => (
-                    <ListItem key={wantedTier.id}>{wantedTier.shortName}: {wantedTier.number}</ListItem>
-                  ))}
-                </UnorderedList>
-              </>
-              }
-            </UnorderedList>
+        <Stack spacing={5}>
+          <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
+            {tierEntries.map(tierEntry => 
+              <Stat key={tierEntry.tier.id}>
+                <StatLabel>{tierEntry.tier.name}</StatLabel>
+                <StatNumber>{t('formatted_percentage', {val: tierEntry.percentage})}</StatNumber>
+                <StatHelpText>{t('formatted_integer', {integer: tierEntry.tier.ratio})} / {t('formatted_integer', {integer: tierEntry.tierRatioSum})}</StatHelpText>
+              </Stat>
+              )}
+          </SimpleGrid>
+          {gachaRequestForm.customizeItems &&
+            <Text>{t('items_customized')}</Text>}
+          <Box h={200}>
+            <ResponsiveContainer>
+              <Treemap data={treeMapData} dataKey='ratio' isAnimationActive={false} content={<CustomTreemapRect />} />
+            </ResponsiveContainer>
           </Box>
-        </Stack>
-      </SimpleGrid>}
-      <Flex>
-        <Button variant="outline" onClick={() => navigate("../plan")}>{t('back')}</Button>
-        <Spacer />
-        <Button 
-          colorScheme="blue"
-          isDisabled={validationErrors.length > 0} 
-          onClick={() => {
-            onOpen();
-            executeGacha();
-          }}
-        >{t('execute')}</Button>
-        <Spacer />
-      </Flex>
-    </FormTemplate>
-    <GachaResultModal 
-      {...gachaResult}
-      isOpen={isOpen}
-      onClose={onClose}
-      onClickRetry={executeGacha}
-      loading={gachaExecuting}
-      error={error}
-    />
+          <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
+            {gachaRequestForm.pricing.pricePerGacha > 0 && 
+              <Stat>
+                <StatLabel>{t('price_per_gacha')}</StatLabel>
+                <StatNumber>{t('formatted_integer', {integer: gachaRequestForm.pricing.pricePerGacha})}</StatNumber>
+              </Stat>}
+            {gachaRequestForm.pricing.discount && gachaRequestForm.pricing.discountedPricePerGacha > 0 && 
+              <Stat>
+                <StatLabel>{t('discount_price_per_n_gachas', {count: gachaRequestForm.pricing.discountTrigger})}</StatLabel>
+                <StatNumber>{t('formatted_integer', {integer: gachaRequestForm.pricing.discountedPricePerGacha * gachaRequestForm.pricing.discountTrigger})}</StatNumber>
+              </Stat>}
+            {countWithinBudget >= 0 &&
+              <Stat>
+                <StatLabel>{t('gacha_count_within_budget')}</StatLabel>
+                <StatNumber>{t('formatted_integer', {integer: countWithinBudget})}</StatNumber>
+                <StatHelpText>{t('budget')} {t('formatted_integer', {integer: gachaRequestForm.plan.budget})}</StatHelpText>
+              </Stat>}
+            <Stat>
+              <StatLabel>{t('effective_max_gachas')}</StatLabel>
+              <StatNumber>{t('formatted_integer', {integer: effectiveMaxConsecutiveGachas})}</StatNumber>
+            </Stat>
+          </SimpleGrid>
+          {gachaRequestForm.policies.pity && gachaRequestForm.policies.pityItem &&
+            <Stack>
+              <Text>{t('pity_item_w_trigger', {count: gachaRequestForm.policies.pityTrigger})}</Text>
+              <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
+                <Item {...gachaRequestForm.policies.pityItem} tierName={gachaRequestForm.policies.pityItem.tier.shortName} />
+              </SimpleGrid>
+            </Stack>
+          }
+          {effectiveItemGoals && 
+          <Stack>
+            <Text>{t('wanted_items')}</Text>
+            <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
+              {filteredWantedItems.map(wantedItem => (
+                <Item key={wantedItem.id} {...wantedItem} tierName={wantedItem.tier.shortName}>
+                  <Stat>
+                    <StatNumber>{wantedItem.number}</StatNumber>
+                  </Stat>
+                </Item>
+              ))}
+            </SimpleGrid>
+          </Stack>}
+          {effectiveTierGoals && 
+            <Stack>
+              <Text>{t('wanted_tiers')}</Text>
+              <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
+                {filteredWantedTiers.map(wantedTier => (
+                  <Tier key={wantedTier.id} {...wantedTier}>
+                    <Stat>
+                      <StatNumber>{wantedTier.number}</StatNumber>
+                    </Stat>
+                  </Tier>
+                ))}
+              </SimpleGrid>
+            </Stack>}
+        </Stack>}
+      <Divider />
+      <Grid templateColumns='repeat(3,1fr)'>
+        <GridItem>
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(-1)}
+            leftIcon={<FiChevronLeft />}
+          >{t('back')}</Button>
+        </GridItem>
+        <GridItem>
+          <Center>
+            <Button 
+              isLoading={gachaExecuting || updating}
+              colorScheme="green"
+              isDisabled={validationErrors.length > 0} 
+              leftIcon={<FiPlay />}
+              onClick={executeGacha}
+            >{t('execute')}</Button>
+          </Center>
+        </GridItem>
+      </Grid>
+    </FormTemplateWrapper>
   </>;
 }

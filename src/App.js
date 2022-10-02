@@ -11,10 +11,11 @@ import { useAuth } from "react-oauth2-pkce";
 import GachaResultList from "./components/GachaResultList";
 import { Box, Center, Spinner, Stack } from "@chakra-ui/react";
 import GachaResultDetails from "./components/GachaResultDetails";
-import GachaResultDetailsPage from "./components/GachaResultDetailsPage";
+import PublicGachaResultDetails from "./components/PublicGachaResultDetails";
 import NotFoundPage from "./components/NotFoundPage";
 import ReloadButton from "./components/ReloadButton";
 import { useEffect, useState } from "react";
+import PresetsForm from "./components/PresetsForm";
 
 export default function App() {
   const { authService } = useAuth();
@@ -29,20 +30,23 @@ export default function App() {
     if (!authService.isPending()) {
       authService.authorize();
     }
-    return <Stack h={'100vh'} justify={'center'}>
+    return (
+      <Stack h={'100vh'} justify={'center'}>
         <Box>
           <Stack spacing={5}>
             <Center><Spinner /></Center>
             {takingTooLong && <Center><ReloadButton onClick={() => { authService.authorize() }} /></Center>}
           </Stack>
         </Box>
-      </Stack>;
+      </Stack>
+    );
   }
   return (
     <Routes>
       <Route path="/" element={<GameTitles />} />
       <Route path="/gacha/:gameTitleSlug" element={<GachaRequestForm><Outlet /></GachaRequestForm>}>
-        <Route index element={<TiersForm />} />
+        <Route index element={<PresetsForm />} />
+        <Route path="presets" element={<PresetsForm />} />
         <Route path="tiers" element={<TiersForm />} />
         <Route path="items" element={<ItemsForm />} />
         <Route path="pricing" element={<PricingForm />} />
@@ -50,9 +54,9 @@ export default function App() {
         <Route path="plan" element={<PlanForm />} />
         <Route path="review" element={<GachaRequestReview />} />
         <Route path="results" element={<GachaResultList />} />
-        <Route path="results/:resultID" element={<GachaResultDetails />} />
+        <Route path="results/:resultId" element={<GachaResultDetails />} />
       </Route>
-      <Route path="/results/:resultID" element={<GachaResultDetailsPage />} />
+      <Route path="/results/:resultId" element={<PublicGachaResultDetails />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

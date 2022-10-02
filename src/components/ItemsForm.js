@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { 
   Button, 
   ScaleFade, 
@@ -11,15 +11,16 @@ import {
   Stack,
   Spacer,
   Flex,
+  Divider,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux';
 import Item from "./Item"
 import { useParams, useNavigate } from 'react-router-dom';
-import useGachaRequestForm from '../redux/useGachaRequestForm';
-import { addItems, removeItem, setCustomizeItems, setItemRatio, setItemsHelpIndex, setShowHelp } from '../redux/gachaRequestFormSlice';
+import { useGachaRequestForm } from '../utils/gachaHooks';
+import { addItems, removeItem, setCustomizeItems, setItemRatio, setItemsHelpIndex, setShowHelp } from '../utils/gachaRequestFormSlice';
 import ItemDrawer from './ItemDrawer';
 import HelpPopover from './HelpPopover';
-import FormTemplate from "./FormTemplate";
+import { FormTemplateWrapper } from "./FormTemplate";
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
 import { useTranslation } from 'react-i18next';
@@ -48,10 +49,17 @@ export default function ItemsForm() {
       return itemsHelpIndex;
     }
   }, [itemsHelpIndex, gachaRequestForm]);
+  const scrollRef = useRef();
   const { t } = useTranslation();
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, []);
+
   return (
-    <FormTemplate title={t('items')}>
+    <FormTemplateWrapper title={t('items')} showHelpIcon={true} ref={scrollRef}>
       <ValidationErrorAlerts validationErrors={validationErrors} pageFilter="items" />
       <Stack spacing={5}>
         <FormControl as={Flex} alignItems='center'>
@@ -169,7 +177,8 @@ export default function ItemsForm() {
           />
         </>}
       </Stack>
+      <Divider />
       <NavigationButtons prevBtnLink="../tiers" nextBtnLink="../pricing" />
-    </FormTemplate>
+    </FormTemplateWrapper>
   );
 }

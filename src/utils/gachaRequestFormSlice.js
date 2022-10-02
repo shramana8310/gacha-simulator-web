@@ -14,6 +14,7 @@ export const gachaRequestFormSlice = createSlice({
   reducers: {
     initializeGachaRequestForm: ({ gachaRequestFormMap }, { payload }) => {
       gachaRequestFormMap[payload] = {
+        presets: [],
         tiers: [],
         customizeItems: false,
         items: [],
@@ -39,10 +40,12 @@ export const gachaRequestFormSlice = createSlice({
           tierGoals: false,
           wantedTiers: []
         },
+        presetsLoaded: false,
         tiersLoaded: false,
         pricingPresetsLoaded: false,
         policiesPresetsLoaded: false,
         planPresetsLoaded: false,
+        presetsError: false,
         tiersError: false,
         pricingPresetsError: false,
         policiesPresetsError: false,
@@ -50,6 +53,9 @@ export const gachaRequestFormSlice = createSlice({
       }
     },
 
+    setPresets: ({ gachaRequestFormMap }, { payload }) => {
+      gachaRequestFormMap[payload.gameTitleSlug].presets = payload.presets;
+    },
     setTiers: ({ gachaRequestFormMap }, { payload }) => {
       gachaRequestFormMap[payload.gameTitleSlug].tiers = payload.tiers;
     },
@@ -146,6 +152,9 @@ export const gachaRequestFormSlice = createSlice({
       gachaRequestFormMap[payload.gameTitleSlug].plan.wantedTiers[payload.index].number = payload.value;
     },
 
+    setPresetsLoaded: ({ gachaRequestFormMap }, { payload }) => {
+      gachaRequestFormMap[payload.gameTitleSlug].presetsLoaded = payload.value;
+    },
     setTiersLoaded: ({ gachaRequestFormMap }, { payload }) => {
       gachaRequestFormMap[payload.gameTitleSlug].tiersLoaded = payload.value;
     },
@@ -159,6 +168,9 @@ export const gachaRequestFormSlice = createSlice({
       gachaRequestFormMap[payload.gameTitleSlug].planPresetsLoaded = payload.value;
     },
 
+    setPresetsError: ({ gachaRequestFormMap }, { payload }) => {
+      gachaRequestFormMap[payload.gameTitleSlug].presetsError = payload.value;
+    },
     setTiersError: ({ gachaRequestFormMap }, { payload }) => {
       gachaRequestFormMap[payload.gameTitleSlug].tiersError = payload.value;
     },
@@ -199,6 +211,7 @@ export const gachaRequestFormSlice = createSlice({
 
 export const { 
   initializeGachaRequestForm, 
+  setPresets,
   setTiers, 
   setItems,
   setPricingPresets,
@@ -229,10 +242,12 @@ export const {
   addWantedTiers,
   removeWantedTier,
   setWantedTierNumber,
+  setPresetsLoaded,
   setTiersLoaded,
   setPricingPresetsLoaded,
   setPoliciesPresetsLoaded,
   setPlanPresetsLoaded,
+  setPresetsError,
   setTiersError,
   setPricingPresetsError,
   setPoliciesPresetsError,

@@ -8,14 +8,6 @@
   "proxies": {
     "/api/": {
       "origin": "${API_URL}"
-    },
-    "/img/": {
-      "origin": "${IMG_URL}"
-    }
-  },
-  "headers": {
-    "/img/**": {
-      "Cache-Control": "public, max-age=604800"
     }
   }
 }

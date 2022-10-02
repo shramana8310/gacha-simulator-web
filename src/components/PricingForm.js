@@ -12,9 +12,10 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Text,
+  Divider,
 } from '@chakra-ui/react'
 import i18next from 'i18next';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from 'react-oauth2-pkce';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,9 +31,9 @@ import {
   setPricingPresetsError,
   setPricingPresetsLoaded,
   setShowHelp,
-} from '../redux/gachaRequestFormSlice';
-import useGachaRequestForm from '../redux/useGachaRequestForm';
-import FormTemplate from './FormTemplate';
+} from '../utils/gachaRequestFormSlice';
+import { useGachaRequestForm } from '../utils/gachaHooks';
+import { FormTemplateWrapper } from './FormTemplate';
 import HelpPopover from './HelpPopover';
 import NavigationButtons from './NavigationButtons';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
@@ -60,6 +61,7 @@ export default function PricingForm() {
       return pricingHelpIndex;
     }  
   }, [pricingHelpIndex, gachaRequestForm]);
+  const scrollRef = useRef();
   const { t } = useTranslation();
 
   const loadPricingPresets = useCallback(() => {
@@ -111,8 +113,14 @@ export default function PricingForm() {
     }
   }, [gachaRequestForm.pricingPresetsLoaded, loadPricingPresets]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, []);
+
   return (
-    <FormTemplate title={t('pricing')}>
+    <FormTemplateWrapper title={t('pricing')} showHelpIcon={true} ref={scrollRef}>
       <ValidationErrorAlerts validationErrors={validationErrors} pageFilter="pricing" />
       {gachaRequestForm.pricingPresetsError && <WarnAlert onClick={loadPricingPresets}>{t('error.fetch_fail_presets')}</WarnAlert>}
       <Stack spacing={5}>
@@ -172,7 +180,6 @@ export default function PricingForm() {
               }))}
               min={0}
               max={100000}
-              allowMouseWheel={true}
             >
               <NumberInputField />
               <NumberInputStepper>
@@ -236,7 +243,6 @@ export default function PricingForm() {
                 }))}
                 min={1}
                 max={10000}
-                allowMouseWheel={true}
               >
                 <NumberInputField />
                 <NumberInputStepper>
@@ -269,7 +275,6 @@ export default function PricingForm() {
                 }))}
                 min={0}
                 max={gachaRequestForm.pricing.pricePerGacha}
-                allowMouseWheel={true}
               >
                 <NumberInputField />
                 <NumberInputStepper>
@@ -287,7 +292,8 @@ export default function PricingForm() {
         </>
         }
       </Stack>
+      <Divider />
       <NavigationButtons prevBtnLink="../items" nextBtnLink="../policies" />
-    </FormTemplate>
+    </FormTemplateWrapper>
   );
 }

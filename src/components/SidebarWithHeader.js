@@ -26,8 +26,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FiGlobe, FiMoon, FiSun } from 'react-icons/fi';
 import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
-import { clearGameTitleCache } from '../redux/gameTitleSlice';
-import { initializeGachaRequestForm } from '../redux/gachaRequestFormSlice';
+import { clearGameTitleCache } from '../utils/gameTitleSlice';
+import { initializeGachaRequestForm } from '../utils/gachaRequestFormSlice';
 import { useTranslation } from 'react-i18next';
 
 export default function SidebarWithHeader({ linkItems, loaded, title, children }) {
@@ -135,7 +135,7 @@ const MobileNav = ({ loaded, title, onOpen, ...rest }) => {
     {lng: 'ko', name: '한국어'},
     {lng: 'ja', name: '日本語'},
   ];
-  const [detectedLanguage, setDetectedLanguage] = useState(supportedLanguages.find(language => i18next.language === language.lng));
+  const [detectedLanguage, setDetectedLanguage] = useState(supportedLanguages.find(language => i18next.resolvedLanguage === language.lng));
   const { t } = useTranslation();
   return (
     <Flex

@@ -3,12 +3,9 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import SidebarWithHeader from "./SidebarWithHeader";
-import { cacheGameTitle } from "../redux/gameTitleSlice";
-import {
-  setMaxConsecutiveGachas,
-} from '../redux/gachaRequestFormSlice';
-import useGachaRequestForm from "../redux/useGachaRequestForm";
-import { FiArchive, FiCircle, FiClipboard, FiCoffee, FiDollarSign, FiHome, FiLayers, FiSliders } from "react-icons/fi";
+import { cacheGameTitle } from "../utils/gameTitleSlice";
+import { useGachaRequestForm } from "../utils/gachaHooks";
+import { FiArchive, FiCircle, FiClipboard, FiCoffee, FiDollarSign, FiHome, FiLayers, FiSliders, FiStar } from "react-icons/fi";
 import { useAuth } from "react-oauth2-pkce";
 import ReloadButton from "./ReloadButton";
 import i18next from "i18next";
@@ -21,6 +18,11 @@ const GachaRequestFormTemplate = ({ loaded, title, children }) => {
       name: t('home'),
       to: '/',
       icon: FiHome
+    },
+    {
+      name: t('presets'),
+      to: 'presets',
+      icon: FiStar
     },
     {
       name: t('tiers'),
@@ -117,13 +119,6 @@ export default function GachaRequestForm({ children }) {
       setError(false);
     }
   }, [gameTitle, loadGameTitle]);
-
-  useEffect(() => {
-    dispatch(setMaxConsecutiveGachas({
-      gameTitleSlug: gameTitleSlug,
-      value: 10,
-    }));
-  }, [dispatch, gameTitleSlug]);
 
   if (!loaded) {
     return <GachaRequestFormTemplate loaded={loaded}>

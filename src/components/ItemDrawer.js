@@ -11,7 +11,6 @@ import {
   Spinner,
   Button,
   Text,
-  ScaleFade,
   Stack,
   SimpleGrid,
   Center,
@@ -23,6 +22,8 @@ import Item from './Item';
 import { useAuth } from "react-oauth2-pkce";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
+
+const DEBOUNCE_MILISECONDS = 500;
 
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -51,14 +52,11 @@ export default function ItemDrawer({
   const { t } = useTranslation();
 
   const searchItems = useMemo(() => _.debounce((keyword) => {
-    if (fetchItems) {
-      const trimmedKeyword = keyword.trim();
-      const searchPath = trimmedKeyword ? 
-        `/api/game-titles/${gameTitleSlug}/items?name=${trimmedKeyword}` : 
-        `/api/game-titles/${gameTitleSlug}/items`;
+    const trimmedKeyword = keyword.trim();
+    if (fetchItems && trimmedKeyword.length >= 2) {
       setSearching(true);
       setItems([]);
-      fetch(searchPath, {
+      fetch(`/api/game-titles/${gameTitleSlug}/items?name=${trimmedKeyword}`, {
         headers: {
           'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
           'Accept-Language': i18next.language,
@@ -86,7 +84,7 @@ export default function ItemDrawer({
         });
       });
     }
-  }, 300), [authService, fetchItems, gameTitleSlug, toast, t]);
+  }, DEBOUNCE_MILISECONDS), [authService, fetchItems, gameTitleSlug, toast, t]);
 
   const handleKeywordChange = useCallback((keyword) => {
     setKeyword(keyword);
@@ -133,8 +131,9 @@ export default function ItemDrawer({
                 return <Fragment key={item.id}></Fragment>;
               }
               if (selectMultipleItems) {
-                return <ScaleFade initialScale={0.9} in={true} key={item.id}>
+                return (
                   <Item
+                    key={item.id}
                     {...item}
                     tierName={item.tier.shortName}
                     checkable={true}
@@ -156,10 +155,11 @@ export default function ItemDrawer({
                       ...items.slice(i+1),
                     ])}
                   />
-                </ScaleFade>;
+                );
               } else {
-                return <ScaleFade initialScale={0.9} in={true} key={item.id}>
+                return (
                   <Box 
+                    key={item.id}
                     _hover={{cursor: 'pointer'}} 
                     onClick={() => {
                       onClose();
@@ -168,7 +168,7 @@ export default function ItemDrawer({
                   >
                     <Item {...item} tierName={item.tier.shortName} />
                   </Box>
-                </ScaleFade>;
+                );
               }
             })}
           </SimpleGrid>

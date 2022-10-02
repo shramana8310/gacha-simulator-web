@@ -1,24 +1,26 @@
 import { Alert, AlertIcon, ScaleFade, Stack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
+const AlertTemplate = ({children}) => {
+  return <Alert status="error">
+    <AlertIcon />
+    {children}
+  </Alert>;
+}
+
 export default function ValidationErrorAlerts({
   validationErrors,
   pageFilter,
   link,
 }) {
-  return validationErrors.length > 0 && 
-    <Stack>
-      {validationErrors
-        .filter((validationError) => !pageFilter || validationError.page === pageFilter)
-        .map((validationError) => {
-          const alertTemplate = <Alert status="error">
-            <AlertIcon />
-            {validationError.message}
-          </Alert>;
-          return link ? 
-              <Link to={`../${validationError.page}`}>{alertTemplate}</Link>
-            : alertTemplate;
-        })
+  const validationErrorEntries = validationErrors.filter((validationError) => !pageFilter || validationError.page === pageFilter);
+  if (validationErrorEntries.length === 0) {
+    return;
+  }
+  return <Stack>
+      {validationErrorEntries.map((validationError) => (link ? 
+              <Link to={`../${validationError.page}`}><AlertTemplate>{validationError.message}</AlertTemplate></Link>
+            : <AlertTemplate>{validationError.message}</AlertTemplate>))
         .map((validationErrorTemplate, i) => <ScaleFade in={true} initialScale={0.9} key={i}>{validationErrorTemplate}</ScaleFade>)}
     </Stack>;
 };

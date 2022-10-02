@@ -1,21 +1,38 @@
 import { 
   Center,
-  ScaleFade, 
+  Flex,
+  Grid,
+  GridItem,
   SimpleGrid, 
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
   Spinner, 
-  useToast, 
+  Stack,
+  Stat, 
+  StatHelpText, 
+  StatLabel, 
+  StatNumber, 
+  useToast,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Text,
+  Divider, 
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { setShowHelp, setTierRatio, setTiers, setTiersLoaded, setTiersError } from '../redux/gachaRequestFormSlice';
-import Tier from "./Tier";
-import useGachaRequestForm from '../redux/useGachaRequestForm';
+import { setShowHelp, setTierRatio, setTiers, setTiersLoaded, setTiersError } from '../utils/gachaRequestFormSlice';
+import { useGachaRequestForm } from '../utils/gachaHooks';
 import HelpPopover from './HelpPopover';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
 import { useAuth } from 'react-oauth2-pkce';
-import { useCallback, useEffect } from 'react';
-import FormTemplate from './FormTemplate';
+import { useCallback, useEffect, useRef } from 'react';
+import { FormTemplateWrapper } from './FormTemplate';
 import ReloadButton from './ReloadButton';
 import i18next from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -27,11 +44,12 @@ const HelpIndex = {
 export default function TierForm() {
   const { authService } = useAuth();
   const { gameTitleSlug } = useParams();
-  const { gachaRequestForm, validationErrors } = useGachaRequestForm();
+  const { gachaRequestForm, validationErrors, tierEntries } = useGachaRequestForm();
   const { showHelp, tiersHelpIndex } = useSelector((state) => state.gachaRequestForm);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toast = useToast();
+  const scrollRef = useRef();
   const { t } = useTranslation();
 
   const loadTiers = useCallback(() => {
@@ -88,55 +106,100 @@ export default function TierForm() {
     }
   }, [gachaRequestForm.tiersLoaded, loadTiers]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, []);
+
   if (!gachaRequestForm.tiersLoaded) {
-    return <FormTemplate title={t('tiers')}>
+    return <FormTemplateWrapper title={t('tiers')} showHelpIcon={true} ref={scrollRef}>
       <Center><Spinner /></Center>
-    </FormTemplate>;
+    </FormTemplateWrapper>;
   }
 
   if (gachaRequestForm.tiersError) {
-    return <FormTemplate title={t('tiers')}>
+    return <FormTemplateWrapper title={t('tiers')} showHelpIcon={true} ref={scrollRef}>
       <Center><ReloadButton onClick={loadTiers} /></Center>
-    </FormTemplate>;
+    </FormTemplateWrapper>;
   }
 
   return (
-    <FormTemplate title={t('tiers')}>
+    <FormTemplateWrapper title={t('tiers')} showHelpIcon={true} ref={scrollRef}>
       <ValidationErrorAlerts validationErrors={validationErrors} pageFilter="tiers" />
-      <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
-        {gachaRequestForm.tiers && gachaRequestForm.tiers.map((tier, i) => {
-          const tierTemplate = <Tier
-            {...tier}
-            ratioEditable={true}
-            ratioMin={0}
-            ratioMax={10000}
-            onRatioChange={(_, value) => dispatch(setTierRatio({
+      <Stack spacing={5}>
+        {gachaRequestForm.tiers.map((tier, i) => {
+          const NumberInputTemplate = <NumberInput size='sm' value={tier.ratio} min={0} max={1000} onChange={(value) => {
+            dispatch(setTierRatio({
               gameTitleSlug: gameTitleSlug,
               index: i,
-              value: value || 0,
-            }))}
-          />;
-          return i === 0 ? 
-            <HelpPopover
-              isOpen={showHelp && tiersHelpIndex === HelpIndex.TIER_RATIO}
-              header={t('help_popover.tier_ratio.header')}
-              body={t('help_popover.tier_ratio.body')}
-              onCloseBtnClick={() => dispatch(setShowHelp(false))}
-              isPrevBtnDisabled={true}
-              onNextBtnClick={() => {
-                navigate("../items");
-              }}
-              key={tier.id}
-            >
-              <ScaleFade in={true} initialScale={0.9}>
-                {tierTemplate}
-              </ScaleFade>
-            </HelpPopover>
-            :
-            <ScaleFade in={true} initialScale={0.9} key={tier.id}>{tierTemplate}</ScaleFade>;
+              value: parseInt(value) || 0,
+            }))
+          }}>
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>;
+          return <Grid templateColumns='repeat(9,1fr)' key={i} gap={5}>
+            <GridItem colSpan={{base: 1, md: 1}} display='grid'>
+              <Flex align='center'>
+                <Center>
+                  <Text>{tier.shortName}</Text>
+                </Center>
+              </Flex>
+            </GridItem>
+            <GridItem colSpan={{base: 5, md: 6}}  display='grid'>
+              <Flex align='center'>
+                <Slider 
+                  value={tier.ratio}
+                  focusThumbOnChange={false} 
+                  min={0} 
+                  max={1000} 
+                  onChange={(value) => {
+                    dispatch(setTierRatio({
+                      gameTitleSlug: gameTitleSlug,
+                      index: i,
+                      value: value || 0,
+                    }))
+                  }}
+                >
+                  <SliderTrack>
+                    <SliderFilledTrack />
+                  </SliderTrack>
+                  <SliderThumb />
+                </Slider>
+              </Flex>
+            </GridItem>
+            <GridItem colSpan={{base: 3, md: 2}} display='grid'>
+              <Flex align='center'>
+                {i === 0 ? <HelpPopover
+                  isOpen={showHelp && tiersHelpIndex === HelpIndex.TIER_RATIO}
+                  header={t('help_popover.tier_ratio.header')}
+                  body={t('help_popover.tier_ratio.body')}
+                  onCloseBtnClick={() => dispatch(setShowHelp(false))}
+                  isPrevBtnDisabled={true}
+                  onNextBtnClick={() => {
+                    navigate("../items");
+                  }}
+                  key={tier.id}
+                >{NumberInputTemplate}</HelpPopover> : NumberInputTemplate}
+              </Flex>
+            </GridItem>
+          </Grid>;
         })}
-      </SimpleGrid>
-      <NavigationButtons prevBtnDisabled={true} nextBtnLink="../items" />
-    </FormTemplate>
+        <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
+          {tierEntries.map(tierEntry => 
+            <Stat key={tierEntry.tier.id}>
+              <StatLabel>{tierEntry.tier.name}</StatLabel>
+              <StatNumber>{t('formatted_percentage', {val: tierEntry.percentage})}</StatNumber>
+              <StatHelpText>{t('formatted_integer', {integer: tierEntry.tier.ratio})} / {t('formatted_integer', {integer: tierEntry.tierRatioSum})}</StatHelpText>
+            </Stat>)}
+        </SimpleGrid>
+      </Stack>
+      <Divider />
+      <NavigationButtons prevBtnDisabled nextBtnLink="../items" />
+    </FormTemplateWrapper>
   );
 }

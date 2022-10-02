@@ -11,9 +11,13 @@
     "results": "結果",
     "result_details": "結果詳細",
     "result": "結果",
+    "result_list": "結果一覧",
 
     "title": "タイトル",
     "open_menu": "メニューを開く",
+
+    "advanced_settings": "アドバンスド設定",
+    "advanced_settings_description": "各種詳細設定を行います",
 
     "add": "追加",
     "select": "選択",
@@ -25,10 +29,23 @@
     "retry": "再実行",
     "previous": "前へ",
     "next": "次へ",
+    "skip": "スキップ",
     "search": "検索",
     "proceed": "進む",
     "help": "ヘルプ",
     "reload": "リロード",
+    "clear": "クリア",
+    "more": "さらに表示",
+    "list": "一覧",
+    "menu": "メニュー",
+    "share": "共有",
+
+    "toggle_public": "公開設定切替",
+    "public_result_can_be_shared": "公開された結果は他人に共有できます",
+    "changed_to_public_result": "公開された結果に変更しました",
+    "changed_to_private_result": "非公開の結果に変更しました",
+    "gacha_simulator_shared_result_title": "ガチャーシミュレーター結果",
+    "gacha_simulator_shared_result_text": "ガチャーシミュレーター結果の公開URL",
 
     "search_items": "アイテム検索",
     "select_item": "アイテム選択",
@@ -47,6 +64,7 @@
     "discount_q": "割引？",
     "discount_trigger": "割引トリガー",
     "discount_price_per_gacha": "割引後の単価",
+    "discount_price_per_n_gachas": "{{count, number}}連ガチャの価格",
     "discount_price_per_n_gachas_w_val": "{{count, number}}連ガチャの価格：{{price, number}}",
     "pity_q": "天井？",
     "pity_trigger": "天井トリガー",
@@ -58,27 +76,25 @@
     "tier_goals_q": "目当てのティアを設定？",
     "wanted_tiers": "目当てのティア",
 
-    "price_per_gacha_w_val": "単発ガチャの価格：{{price, number}}",
     "price_per_n_gachas_w_val": "{{count, number}}連ガチャの価格：{{price, number}}",
-    "gacha_count_within_budget": "予算の{{budget, number}}内で{{count, number}}回引けます",
-    "effective_max_gachas": "最大{{count, number}}連ガチャを引きます",
-    "pity_trigger_w_item_name": "{{count, number}}連ガチャで「{{name}}」がもらえます",
+    "gacha_count_within_budget": "予算内で最大で引ける回数",
+    "effective_max_gachas": "最大で引ける回数",
+    "pity_item_w_trigger": "{{count, number}}連ガチャで次のアイテムがもらえます",
     "items_customized": "カスタマイズされたプール内でアイテムを引きます",
-    "you_want_these_items": "目当てのアイテム：",
-    "you_want_these_tiers": "目当てのティア：",
+    "max_gachas": "最大回数",
 
     "url_copied": "URLをクリップボードにコピーしました",
     "no_gacha_results_available": "結果が見つかりません",
     "id": "ID",
     "goals": "目標",
-    "item_count": "アイテム数",
-    "money_spent": "かかったお金",
+    "item_count": "アイテムの数",
+    "money_spent": "消費金額",
     "time": "時間",
     "details": "詳細",
     "public": "公開",
     "url": "URL",
     "goals_achieved": "目標達成",
-    "unique_items": "ユニークなアイテム",
+    "unique_items": "ユニークなアイテムの数",
     "item": "アイテム",
     "count": "数",
     "percentage": "パーセンテージ",
@@ -86,6 +102,9 @@
     "not_found": "お探しのものが見つかりません",
 
     "formatted_integer": "{{integer, number}}",
+    "formatted_percentage": "{{val, number(style: percent; maximumFractionDigits: 2)}}",
+
+    "gacha_result_of_game_title": "{{gameTitle, string}} ガチャ結果",
 
     "help_popover": {
         "tier_ratio": {
@@ -172,6 +191,7 @@
 
     "error": {
         "fetch_fail_game_title": "ゲームタイトル情報を読み込めませんでした",
+        "fetch_fail_form_presets": "プリセットを読み込めませんでした。",
         "fetch_fail_tier": "ティア情報を読み込めませんでした",
         "fetch_fail_item_search": "アイテム検索に失敗しました",
         "fetch_fail_presets": "プリセットを読み込めませんでした。こちらをクリックしてリロードします。",
@@ -180,14 +200,15 @@
         "fetch_fail_public_switch": "公開設定の切り替えを失敗しました",
         "fetch_fail_gacha": "ガチャ実行を失敗しました",
         "url_copy_fail": "URL「{{url}}」をコピーできませんでした",
-        "tiers_empty": "ティアが空です",
+        "tiers_empty": "ティア情報が読み込まれていません",
         "tier_ratio_zero": "ティア割合の合計がゼロです",
-        "items_empty": "アイテムが空です",
+        "items_empty": "アイテムが選択されていません",
+        "items_too_large": "アイテム数が多すぎます",
         "item_ratio_zero": "アイテム割合の合計がゼロです",
         "discount_gt_price": "割引後の単価が割引前の単価より高いです",
         "pity_item_empty": "天井アイテムが選択されていません",
         "wanted_item_empty": "目当てのアイテムが選択されていません",
         "wanted_tier_empty": "目当てのティアが選択されていません",
-        "gachas_zero": "引けるガチャの数が実質ゼロです"
+        "gachas_zero": "ガチャを引ける回数が実質ゼロです"
     }
 }

@@ -1,41 +1,44 @@
-import { Button, Center, Flex, Skeleton, Spacer, Stack, useToast } from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
+import { Button, Center, Divider, Menu, MenuButton, MenuItem, MenuList, Skeleton, useToast } from "@chakra-ui/react";
 import i18next from "i18next";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { FiChevronLeft, FiChevronRight, FiEye, FiList, FiShare2 } from "react-icons/fi";
 import { useAuth } from "react-oauth2-pkce";
 import { useNavigate, useParams } from "react-router-dom";
-import FormTemplate from "./FormTemplate";
+import { useGachaResultShareCallbacks } from "../utils/gachaHooks";
+import { FormTemplateWrapper } from "./FormTemplate";
 import GachaResult from "./GachaResult";
-import NotFoundAlert from "./NotFoundAlert";
+import { NavigationButtonTemplate } from "./NavigationButtons";
 import ReloadButton from "./ReloadButton";
 
-const GachaResultDetailsTemplate = ({isLoaded, children}) => {
-  const { t } = useTranslation();
-  return <>
-    <FormTemplate title={t('result_details')}>
-      <Skeleton isLoaded={isLoaded}>
-        <Stack spacing={5}>
-          {children}
-        </Stack>
-      </Skeleton>
-    </FormTemplate>
-  </>;
-};
-
-export default function GachaResultDetails({ showPublicOnly }) {
+export default function GachaResultDetails() {
   const { authService } = useAuth();
-  const { resultID } = useParams();
+  const { resultId } = useParams();
   const [ gachaResult, setGachaResult ] = useState();
+  const [ navigation, setNavigation ] = useState({
+    nextAvailable: false,
+    nextId: 0,
+    prevAvailable: false,
+    prevId: 0,
+  });
+  const { 
+    nextAvailable, 
+    nextId, 
+    prevAvailable, 
+    prevId, 
+  } = useMemo(() => navigation, [navigation]);
   const [ loaded, setLoaded ] = useState(false);
+  const [ updating, setUpdating ] = useState(false);
   const [ error, setError ] = useState(false);
-  const [ notFound, setNotFound ] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
+  const scrollRef = useRef();
   const { t } = useTranslation();
 
   const loadResult = useCallback(() => {
     setLoaded(false);
-    fetch(`/api/gachas/${resultID}`, {
+    fetch(`/api/gachas/${resultId}`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
@@ -48,52 +51,105 @@ export default function GachaResultDetails({ showPublicOnly }) {
       }
       return response.json();
     })
-    .then(gachaResult => {
+    .then(gachaResultResponse => {
+      const { 
+        nextAvailable, 
+        nextId, 
+        prevAvailable, 
+        prevId, 
+        ...gachaResult
+      } = gachaResultResponse;
       setGachaResult(gachaResult);
+      setNavigation({ nextAvailable, nextId, prevAvailable, prevId });
       setLoaded(true);
       setError(false);
-      setNotFound(false);
     })
-    .catch(response => {
+    .catch(() => {
       setLoaded(true);
-      if (response.status >= 400 && response.status < 500) {
-        setError(false);
-        setNotFound(true);
-      } else {
-        setError(true);
-        setNotFound(false);
-        toast({
-          title: t('error.fetch_fail_result'),
-          status: 'error',
-          isClosable: true,
-        });
-      }
+      setError(true);
+      toast({
+        title: t('error.fetch_fail_result'),
+        status: 'error',
+        isClosable: true,
+      });
     });
-  }, [authService, resultID, t, toast]);
+  }, [authService, resultId, t, toast]);
+
+  const { togglePublic, shareGacha } = useGachaResultShareCallbacks({
+    authService,
+    gachaResult,
+    i18next,
+    setGachaResult,
+    setUpdating,
+    toast,
+    t,
+  });
 
   useEffect(() => {
     loadResult();
   }, [loadResult]);
 
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({behavior: 'smooth'});
+    }
+  }, [gachaResult]);
+
   if (error) {
-    return <GachaResultDetailsTemplate isLoaded={loaded}>
+    return <FormTemplateWrapper title={t('result_details')} ref={scrollRef}>
       <Center><ReloadButton onClick={loadResult} /></Center>
-    </GachaResultDetailsTemplate>;
+    </FormTemplateWrapper>;
   }
 
-  if (notFound) {
-    return <GachaResultDetailsTemplate isLoaded={loaded}>
-      <NotFoundAlert />
-    </GachaResultDetailsTemplate>;
-  }
-
-  return <GachaResultDetailsTemplate isLoaded={loaded}>
-    {gachaResult && <GachaResult {...gachaResult} />}
-    {!showPublicOnly && 
-    <Flex>
-      <Button variant="outline" onClick={() => navigate(-1)}>{t('back')}</Button>
-      <Spacer />
-    </Flex>}
-    
-  </GachaResultDetailsTemplate>;
+  return (
+    <FormTemplateWrapper 
+      title={t('result_details')} 
+      ref={scrollRef}
+      menu={
+        <Menu>
+          <MenuButton as={Button} isLoading={updating} rightIcon={<ChevronDownIcon />}>
+            {t('menu')}
+          </MenuButton>
+          <MenuList>
+            <MenuItem 
+              onClick={togglePublic}
+              icon={<FiEye />}
+            >{t('toggle_public')}</MenuItem>
+            <MenuItem 
+              onClick={shareGacha}
+              icon={<FiShare2 />}
+            >{t('share')}</MenuItem>
+            <MenuItem 
+              onClick={() => navigate('../results')}
+              icon={<FiList />}
+            >{t('result_list')}</MenuItem>
+            {prevAvailable && (
+              <MenuItem 
+                onClick={() => navigate(`../results/${prevId}`)}
+                icon={<FiChevronLeft />}
+                >{t('previous')}</MenuItem>
+            )}
+            {nextAvailable && (
+              <MenuItem 
+                onClick={() => navigate(`../results/${nextId}`)}
+                icon={<FiChevronRight />}
+              >{t('next')}</MenuItem>
+            )}
+          </MenuList>
+        </Menu>
+      }
+    >
+      <Skeleton isLoaded={loaded}>
+        {gachaResult && 
+        <GachaResult gachaResult={gachaResult} showPublicStat={true} />}
+      </Skeleton>
+      <Divider />
+      <NavigationButtonTemplate 
+        nextBtnDisabled={!nextAvailable}
+        nextBtnLink={`../results/${nextId}`}
+        prevBtnDisabled={!prevAvailable}
+        prevBtnLink={`../results/${prevId}`}
+      />
+    </FormTemplateWrapper>
+  );
 }

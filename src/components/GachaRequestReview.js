@@ -24,7 +24,7 @@ import { ResponsiveContainer, Treemap } from 'recharts';
 import i18next from 'i18next';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from 'react-oauth2-pkce';
+import { useAuth } from "../auth/AuthContext";
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useGachaRequestForm, useGachaResultShareCallbacks } from '../utils/gachaHooks';
@@ -69,7 +69,7 @@ export default function GachaRequestReview() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       },
       body: JSON.stringify({

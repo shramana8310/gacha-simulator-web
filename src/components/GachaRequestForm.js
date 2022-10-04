@@ -6,7 +6,7 @@ import SidebarWithHeader from "./SidebarWithHeader";
 import { cacheGameTitle } from "../utils/gameTitleSlice";
 import { useGachaRequestForm } from "../utils/gachaHooks";
 import { FiArchive, FiCircle, FiClipboard, FiCoffee, FiDollarSign, FiHome, FiLayers, FiSliders, FiStar } from "react-icons/fi";
-import { useAuth } from "react-oauth2-pkce";
+import { useAuth } from "../auth/AuthContext";
 import ReloadButton from "./ReloadButton";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
@@ -85,7 +85,7 @@ export default function GachaRequestForm({ children }) {
     setLoaded(false);
     fetch(`/api/game-titles/${gameTitleSlug}`, {
       headers: {
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       }
     })

@@ -47,7 +47,7 @@ import { useGachaRequestForm } from '../utils/gachaHooks';
 import HelpPopover from './HelpPopover';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
-import { useAuth } from 'react-oauth2-pkce';
+import { useAuth } from "../auth/AuthContext";
 import { FormTemplateWrapper } from './FormTemplate';
 import WarnAlert from './WarnAlert';
 import i18next from 'i18next';
@@ -114,7 +114,7 @@ export default function PlanForm() {
     }));
     fetch(`/api/game-titles/${gameTitleSlug}/plans`, {
       headers: {
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       }
     })

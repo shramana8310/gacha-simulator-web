@@ -2,7 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { AuthProvider } from 'react-oauth2-pkce';
+import { AuthProvider } from '../auth/AuthProvider';
 import { Provider as ReduxProvider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import store from '../store';
@@ -30,9 +30,7 @@ afterAll(() => server.close());
 it('pass', async () => {
   const mockAuthService = {
     isAuthenticated: jest.fn(),
-    isPending: jest.fn(),
-    authorize: jest.fn(),
-    getAuthTokens: jest.fn(() => ({ access_token: 'token' })),
+    getAccessToken: jest.fn(() => 'token'),
   };
   jest.mock('react-i18next', () => ({
     useTranslation: () => {

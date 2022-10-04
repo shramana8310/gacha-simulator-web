@@ -22,7 +22,7 @@ import {
   setItems 
 } from '../utils/gachaRequestFormSlice';
 import { useGachaRequestForm } from '../utils/gachaHooks';
-import { useAuth } from 'react-oauth2-pkce';
+import { useAuth } from "../auth/AuthContext";
 import { useCallback, useEffect, useRef } from 'react';
 import { FormTemplateWrapper } from './FormTemplate';
 import ReloadButton from './ReloadButton';
@@ -63,7 +63,7 @@ export default function PresetsForm() {
     }));
     fetch(`/api/game-titles/${gameTitleSlug}/presets`, {
       headers: {
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       }
     })

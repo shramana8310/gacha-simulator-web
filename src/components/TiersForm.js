@@ -30,7 +30,7 @@ import { useGachaRequestForm } from '../utils/gachaHooks';
 import HelpPopover from './HelpPopover';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
-import { useAuth } from 'react-oauth2-pkce';
+import { useAuth } from "../auth/AuthContext";
 import { useCallback, useEffect, useRef } from 'react';
 import { FormTemplateWrapper } from './FormTemplate';
 import ReloadButton from './ReloadButton';
@@ -59,7 +59,7 @@ export default function TierForm() {
     }));
     fetch(`/api/game-titles/${gameTitleSlug}/tiers`, {
       headers: {
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       }
     })

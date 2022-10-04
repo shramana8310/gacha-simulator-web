@@ -4,7 +4,7 @@ import i18next from "i18next";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiChevronLeft, FiChevronRight, FiEye, FiList, FiShare2 } from "react-icons/fi";
-import { useAuth } from "react-oauth2-pkce";
+import { useAuth } from "../auth/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGachaResultShareCallbacks } from "../utils/gachaHooks";
 import { FormTemplateWrapper } from "./FormTemplate";
@@ -41,7 +41,7 @@ export default function GachaResultDetails() {
     fetch(`/api/gachas/${resultId}`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       }
     })

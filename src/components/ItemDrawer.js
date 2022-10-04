@@ -19,7 +19,7 @@ import {
 } from '@chakra-ui/react';
 import _ from 'lodash';
 import Item from './Item';
-import { useAuth } from "react-oauth2-pkce";
+import { useAuth } from "../auth/AuthContext";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
 
@@ -58,7 +58,7 @@ export default function ItemDrawer({
       setItems([]);
       fetch(`/api/game-titles/${gameTitleSlug}/items?name=${trimmedKeyword}`, {
         headers: {
-          'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+          'Authorization': `Bearer ${authService.getAccessToken()}`,
           'Accept-Language': i18next.language,
         }
       })

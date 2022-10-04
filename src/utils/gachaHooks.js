@@ -171,7 +171,7 @@ export const useGachaResultShareCallbacks = ({
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       },
       body: JSON.stringify({

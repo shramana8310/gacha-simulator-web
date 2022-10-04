@@ -7,7 +7,7 @@ import PricingForm from "./components/PricingForm";
 import PoliciesForm from "./components/PoliciesForm";
 import PlanForm from "./components/PlanForm";
 import GachaRequestReview from "./components/GachaRequestReview";
-import { useAuth } from "react-oauth2-pkce";
+import { useAuth } from "./auth/AuthContext";
 import GachaResultList from "./components/GachaResultList";
 import { Box, Center, Spinner, Stack } from "@chakra-ui/react";
 import GachaResultDetails from "./components/GachaResultDetails";
@@ -27,15 +27,12 @@ export default function App() {
   }, []);
 
   if (!authService.isAuthenticated()) {
-    if (!authService.isPending()) {
-      authService.authorize();
-    }
     return (
       <Stack h={'100vh'} justify={'center'}>
         <Box>
           <Stack spacing={5}>
             <Center><Spinner /></Center>
-            {takingTooLong && <Center><ReloadButton onClick={() => { authService.authorize() }} /></Center>}
+            {takingTooLong && <Center><ReloadButton onClick={() => { authService.login() }} /></Center>}
           </Stack>
         </Box>
       </Stack>

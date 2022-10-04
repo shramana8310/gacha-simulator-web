@@ -15,7 +15,7 @@ import {
 import { useDispatch } from "react-redux";
 import { cacheGameTitle } from "../utils/gameTitleSlice";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "react-oauth2-pkce";
+import { useAuth } from "../auth/AuthContext";
 import ReloadButton from "./ReloadButton";
 import i18next from "i18next";
 
@@ -67,7 +67,7 @@ export default function GameTitles() {
     setLoading(true);
     fetch('/api/game-titles', {
       headers: {
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       }
     })

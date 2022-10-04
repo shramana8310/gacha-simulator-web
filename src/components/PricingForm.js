@@ -17,7 +17,7 @@ import {
 import i18next from 'i18next';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from 'react-oauth2-pkce';
+import { useAuth } from "../auth/AuthContext";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { 
@@ -71,7 +71,7 @@ export default function PricingForm() {
     }));
     fetch(`/api/game-titles/${gameTitleSlug}/pricings`, {
       headers: {
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       }
     })

@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom";
 import i18next from "i18next";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "react-oauth2-pkce";
+import { useAuth } from "../auth/AuthContext";
 import { useParams } from "react-router-dom";
 import GachaResult from "./GachaResult";
 import NotFoundPage from "./NotFoundPage";
@@ -30,7 +30,7 @@ export default function PublicGachaResultDetails() {
     fetch(`/api/gachas/${resultId}`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       }
     })

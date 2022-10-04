@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react'
 import { CheckIcon, NotAllowedIcon } from '@chakra-ui/icons';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAuth } from "react-oauth2-pkce";
+import { useAuth } from "../auth/AuthContext";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import ReloadButton from './ReloadButton';
 import i18next from 'i18next';
@@ -116,7 +116,7 @@ export default function GachaResultList() {
     }), {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authService.getAuthTokens().access_token}`,
+        'Authorization': `Bearer ${authService.getAccessToken()}`,
         'Accept-Language': i18next.language,
       },
     })

@@ -14,25 +14,36 @@ import GachaResultDetails from "./components/GachaResultDetails";
 import PublicGachaResultDetails from "./components/PublicGachaResultDetails";
 import NotFoundPage from "./components/NotFoundPage";
 import ReloadButton from "./components/ReloadButton";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import PresetsForm from "./components/PresetsForm";
 
 export default function App() {
   const { authService } = useAuth();
-  const [ takingTooLong, setTakingTooLong ] = useState(false);
+
+  const [authenticated, setAuthenticated] = useState(authService.isAuthenticated());
+  const authenticatedCallback = useCallback((authenticated) => {
+    setAuthenticated(authenticated);
+  }, []);
+  authService.setAuthenticatedCallback(authenticatedCallback);
+
+  const [pending, setPending] = useState(authService.isPending());
+  const pendingCallback = useCallback((pending) => {
+    setPending(pending);
+  }, []);
+  authService.setPendingCallback(pendingCallback);
+
   useEffect(() => {
-    setTimeout(() => {
-      setTakingTooLong(true);
-    }, 5000);
+    authService.init();
   }, []);
 
-  if (!authService.isAuthenticated()) {
+  if (!authenticated) {
     return (
       <Stack h={'100vh'} justify={'center'}>
         <Box>
           <Stack spacing={5}>
-            <Center><Spinner /></Center>
-            {takingTooLong && <Center><ReloadButton onClick={() => { authService.login() }} /></Center>}
+            <Center>
+            {pending ? <Spinner /> : <ReloadButton onClick={() => authService.login()} />}
+            </Center>
           </Stack>
         </Box>
       </Stack>

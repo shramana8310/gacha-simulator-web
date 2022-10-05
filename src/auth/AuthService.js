@@ -5,43 +5,32 @@ import _ from 'lodash';
 export class AuthService {
   constructor(props) {
     this.props = props;
-    const tokens = localStorage.getItem('tokens');
+    const tokens = this.getTokens();
     if (tokens) {
-      this.tokens = JSON.parse(tokens);
+      this.tokens = tokens;
     }
-    this.login();
   }
-  
-  getAccessToken() {
-    return this.tokens && this.tokens.accessToken;
-  }
-  
-  getRefreshToken() {
-    return this.tokens && this.tokens.refreshToken;
-  }
-  
-  isAuthenticated() {
-    return this.tokens && this.tokens.accessToken && !this.isAccessTokenExpired();
-  }
-  
-  isAccessTokenExpired() {
-    if (this.tokens && this.tokens.accessToken && this.tokens.expiresAt) {
-      const now = new Date().getTime();
-      return now >= this.tokens.expiresAt;
+
+  init() {
+    const { autoRefresh } = this.props;
+    if (this.isAuthenticated()) {
+      if (autoRefresh) {
+        const refreshToken = this.getRefreshToken();
+        const expiresIn = this.getAccessTokenExpiresIn();
+        this.refreshTimer(refreshToken, expiresIn);
+      }
     } else {
-      return false;
+      this.login();
     }
   }
-  
+
   async login() {
     if (this.isAuthenticated()) {
       return;
     }
-    const pending = sessionStorage.getItem('pending');
-    if (pending) {
+    if (this.isPending()) {
       return;
     }
-    sessionStorage.setItem('pending', true);
     const loginPromise = () => {
       if (this.isAccessTokenExpired()) {
         const refreshToken = this.getRefreshToken();
@@ -50,23 +39,35 @@ export class AuthService {
         return this.startPKCEFlow();
       }
     };
+    this.setPending();
     return loginPromise()
-    .catch(() => {
-      localStorage.removeItem('tokens');
-      this.startPKCEFlow();
-    })
-    .finally(() => {
-      sessionStorage.removeItem('pending');
-    });
+      .then((tokens) => {
+        this.setTokens(tokens);
+        this.clearPending();
+      })
+      .catch(() => {
+        this.clearTokens();
+        this.startPKCEFlow()
+          .then((tokens) => {
+            this.setTokens(tokens);
+          })
+          .catch((e) => {
+            console.warn(e);
+            this.clearTokens();
+          })
+          .finally(() => {
+            this.clearPending();
+          });
+      });
   }
-  
+
   async startPKCEFlow() {
     const { code, codeVerifier } = await this.authorize();
-    await this.token(false, null, code, codeVerifier);
+    return await this.token(false, null, code, codeVerifier);
   }
   
   async authorize() {
-    const { clientId, provider, redirectUri } = this.props;
+    const { clientId, provider, redirectUri, timeout } = this.props;
     const codeVerifier = this.generateCodeVerifier();
     const codeChallenge = await this.generateCodeChallenge(codeVerifier);
     const query = {
@@ -77,12 +78,16 @@ export class AuthService {
       codeChallengeMethod: 'S256'
     };
     const queryString = this.toUrlEncoded(query);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
     const authResponse = await fetch(`${provider}/authorize?${queryString}`, {
       headers: {
         'Authorization': '',
         'Content-Type': 'application/x-www-form-urlencoded',
       },
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     if (authResponse.status >= 400) {
       const json = await authResponse.json();
       throw new Error(json.error);
@@ -92,7 +97,7 @@ export class AuthService {
   }
   
   async token(refresh, refreshToken, code, codeVerifier) {
-    const { clientId, provider, redirectUri, autoRefresh } = this.props;
+    const { clientId, provider, redirectUri, autoRefresh, timeout } = this.props;
     let payload = { clientId, redirectUri };
     if (refresh) {
       payload = {
@@ -108,13 +113,17 @@ export class AuthService {
         codeVerifier,
       };
     }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
     const response = await fetch(`${provider}/token`, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       method: 'POST',
-      body: this.toUrlEncoded(payload)
+      body: this.toUrlEncoded(payload),
+      signal: controller.signal,
     });
+    clearTimeout(timeoutId);
     if (response.status >= 400) {
       const json = await response.json();
       throw new Error(json.error);
@@ -131,8 +140,6 @@ export class AuthService {
     if (autoRefresh) {
       this.refreshTimer(tokens.refreshToken, tokens.expiresIn * 1000);
     }
-    localStorage.setItem('tokens', JSON.stringify(tokens));
-    this.tokens = tokens;
     return tokens;
   }
   
@@ -145,20 +152,126 @@ export class AuthService {
       clearTimeout(this.timeout);
     }
     this.timeout = setTimeout(() => {
-      const pending = sessionStorage.getItem('pending');
-      if (pending) {
+      if (this.isPending()) {
         return;
       }
-      sessionStorage.setItem('pending', true);
+      this.setPending();
       this.refreshToken(refreshToken)
-        .catch(() => {
-          localStorage.removeItem('tokens');
-          this.startPKCEFlow();
+        .then((tokens) => {
+          this.setTokens(tokens);
+          this.clearPending();
         })
-        .finally(() => {
-          sessionStorage.removeItem('pending');
-        });
+        .catch(() => {
+          this.clearTokens();
+          this.startPKCEFlow()
+            .then((tokens) => {
+              this.setTokens(tokens);
+            })
+            .catch((e) => {
+              console.warn(e);
+              this.clearTokens();
+            })
+            .finally(() => {
+              this.clearPending();
+            });
+          });
     }, delay);
+  }
+  
+  setTokens(tokens) {
+    localStorage.setItem('tokens', JSON.stringify(tokens));
+    this.tokens = tokens;
+    const authenticated = this.isAuthenticated();
+    this.invokeAuthenticatedCallback(authenticated);
+  }
+
+  clearTokens() {
+    localStorage.removeItem('tokens');
+    this.tokens = undefined;
+    const authenticated = this.isAuthenticated();
+    this.invokeAuthenticatedCallback(authenticated);
+  }
+
+  getTokens() {
+    if (this.tokens) {
+      return this.tokens;
+    }
+    const tokens = localStorage.getItem('tokens');
+    if (tokens) {
+      return JSON.parse(tokens);
+    }
+    return undefined;
+  }
+  
+  getAccessToken() {
+    const tokens = this.getTokens();
+    return tokens && tokens.accessToken;
+  }
+  
+  getRefreshToken() {
+    const tokens = this.getTokens();
+    return tokens && tokens.refreshToken;
+  }
+  
+  isAuthenticated() {
+    const tokens = this.getTokens();
+    return tokens && tokens.accessToken && !this.isAccessTokenExpired();
+  }
+  
+  isAccessTokenExpired() {
+    const tokens = this.getTokens();
+    if (tokens && tokens.accessToken && tokens.expiresAt) {
+      const now = new Date().getTime();
+      return now >= tokens.expiresAt;
+    } else {
+      return false;
+    }
+  }
+
+  getAccessTokenExpiresIn() {
+    const tokens = this.getTokens();
+    if (tokens && tokens.accessToken && tokens.expiresAt) {
+      const now = new Date().getTime();
+      return tokens.expiresAt - now;
+    } else {
+      return undefined;
+    }
+  }
+
+  setPending() {
+    sessionStorage.setItem('pending', true);
+    this.invokePendingCallback();
+  }
+
+  clearPending() {
+    sessionStorage.removeItem('pending');
+    this.invokePendingCallback();
+  }
+
+  isPending() {
+    return !!sessionStorage.getItem('pending');
+  }
+
+  setAuthenticatedCallback(authenticatedCallback) {
+    this.authenticatedCallback = authenticatedCallback;
+  }
+
+  invokeAuthenticatedCallback() {
+    if (this.authenticatedCallback) {
+      const authenticated = this.isAuthenticated();
+      this.authenticatedCallback(authenticated);
+    }
+  }
+
+  setPendingCallback(pendingCallback) {
+    this.pendingCallback = pendingCallback;
+  }
+
+  invokePendingCallback() {
+    if (this.pendingCallback) {
+      const pending = this.isPending();
+      this.pendingCallback(pending);
+    }
   }
   
   generateCodeVerifier() {
@@ -169,9 +282,9 @@ export class AuthService {
     const codeVerifierBuffer = new TextEncoder().encode(codeVerifier);
     const digest = await window.crypto.subtle.digest('SHA-256', codeVerifierBuffer);
     return encode(digest)
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=/g, '');
   }
   
   extractCode(urlString) {
@@ -182,7 +295,7 @@ export class AuthService {
   
   toUrlEncoded(obj) {
     return Object.keys(obj)
-    .map((k) => encodeURIComponent(_.snakeCase(k)) + '=' + encodeURIComponent(obj[k]))
-    .join('&');
+      .map((k) => encodeURIComponent(_.snakeCase(k)) + '=' + encodeURIComponent(obj[k]))
+      .join('&');
   }
 }

@@ -15,6 +15,7 @@ const authService = new AuthService({
   provider: `${window.location.origin}/api`,
   redirectUri: window.location.origin,
   autoRefresh: true,
+  timeout: 5000,
 });
 
 const container = document.getElementById('root');

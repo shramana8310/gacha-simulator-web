@@ -16,7 +16,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useDispatch } from "react-redux";
-import { cacheGameTitle } from "../utils/gameTitleSlice";
+import { cacheGameTitle, clearGameTitleCache } from "../utils/gameTitleSlice";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 import ReloadButton from "./ReloadButton";
@@ -24,6 +24,7 @@ import i18next from "i18next";
 import Footer from "./Footer";
 import ColorModeToggleButton from "./ColorModeToggleButton";
 import LanguageMenu from "./LanguageMenu";
+import { initializeGachaRequestFormMap } from "../utils/gachaRequestFormSlice";
 
 const GameTitle = ({ 
   name, 
@@ -50,6 +51,7 @@ const GameTitle = ({
 
 const GameTitlesTemplate = ({children}) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   return (
     <Container maxW={'5xl'} p={5}>
       <Stack spacing={10}>
@@ -60,7 +62,10 @@ const GameTitlesTemplate = ({children}) => {
           <Spacer />
           <ButtonGroup gap='2'>
             <ColorModeToggleButton />
-            <LanguageMenu />
+            <LanguageMenu onLanguageChange={() => {
+              dispatch(clearGameTitleCache());
+              dispatch(initializeGachaRequestFormMap());
+            }} />
           </ButtonGroup>
         </Flex>
         {children}

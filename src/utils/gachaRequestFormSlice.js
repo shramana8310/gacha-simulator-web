@@ -12,6 +12,10 @@ export const gachaRequestFormSlice = createSlice({
     planHelpIndex: 0,
   },
   reducers: {
+    initializeGachaRequestFormMap: (state, action) => {
+      state.gachaRequestFormMap = {};
+    },
+
     initializeGachaRequestForm: ({ gachaRequestFormMap }, { payload }) => {
       gachaRequestFormMap[payload] = {
         presets: [],
@@ -210,6 +214,7 @@ export const gachaRequestFormSlice = createSlice({
 });
 
 export const { 
+  initializeGachaRequestFormMap,
   initializeGachaRequestForm, 
   setPresets,
   setTiers, 

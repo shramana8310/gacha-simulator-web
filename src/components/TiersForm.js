@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { setShowHelp, setTierRatio, setTiers, setTiersLoaded, setTiersError } from '../utils/gachaRequestFormSlice';
 import { useGachaRequestForm } from '../utils/gachaHooks';
-import HelpPopover from './HelpPopover';
+import { ConditionalHelpPopover } from './HelpPopover';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
 import { useAuth } from "../auth/AuthContext";
@@ -128,21 +128,8 @@ export default function TierForm() {
     <FormTemplateWrapper title={t('tiers')} showHelpIcon={true} ref={scrollRef}>
       <ValidationErrorAlerts validationErrors={validationErrors} pageFilter="tiers" />
       <Stack spacing={5}>
-        {gachaRequestForm.tiers.map((tier, i) => {
-          const NumberInputTemplate = <NumberInput size='sm' value={tier.ratio} min={0} max={1000} onChange={(value) => {
-            dispatch(setTierRatio({
-              gameTitleSlug: gameTitleSlug,
-              index: i,
-              value: parseInt(value) || 0,
-            }))
-          }}>
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>;
-          return <Grid templateColumns='repeat(9,1fr)' key={i} gap={5}>
+        {gachaRequestForm.tiers.map((tier, i) => (
+          <Grid templateColumns='repeat(9,1fr)' key={i} gap={5}>
             <GridItem colSpan={{base: 1, md: 1}} display='grid'>
               <Flex align='center'>
                 <Center>
@@ -174,7 +161,8 @@ export default function TierForm() {
             </GridItem>
             <GridItem colSpan={{base: 3, md: 2}} display='grid'>
               <Flex align='center'>
-                {i === 0 ? <HelpPopover
+                <ConditionalHelpPopover 
+                  show={i === 0}
                   isOpen={showHelp && tiersHelpIndex === HelpIndex.TIER_RATIO}
                   header={t('help_popover.tier_ratio.header')}
                   body={t('help_popover.tier_ratio.body')}
@@ -184,11 +172,31 @@ export default function TierForm() {
                     navigate("../items");
                   }}
                   key={tier.id}
-                >{NumberInputTemplate}</HelpPopover> : NumberInputTemplate}
+                >
+                  <NumberInput 
+                    size='sm' 
+                    value={tier.ratio} 
+                    min={0} 
+                    max={1000} 
+                    onChange={(value) => {
+                      dispatch(setTierRatio({
+                        gameTitleSlug: gameTitleSlug,
+                        index: i,
+                        value: parseInt(value) || 0,
+                      }))
+                    }}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                </ConditionalHelpPopover>
               </Flex>
             </GridItem>
-          </Grid>;
-        })}
+          </Grid>
+        ))}
         <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
           {tierEntries.map(tierEntry => 
             <Stat key={tierEntry.tier.id}>

@@ -19,7 +19,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useGachaRequestForm } from '../utils/gachaHooks';
 import { addItems, removeItem, setCustomizeItems, setItemRatio, setItemsHelpIndex, setShowHelp } from '../utils/gachaRequestFormSlice';
 import ItemDrawer from './ItemDrawer';
-import HelpPopover from './HelpPopover';
+import HelpPopover, { ConditionalHelpPopover } from './HelpPopover';
 import { FormTemplateWrapper } from "./FormTemplate";
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
@@ -115,45 +115,42 @@ export default function ItemsForm() {
             </HelpPopover>
           </FormControl>
           <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
-            {gachaRequestForm.items.map((item, i) => {
-              const itemTemplate = <Item
-                {...item}
-                tierName={item.tier.shortName}
-                ratioEditable={true}
-                ratioMin={0}
-                ratioMax={10000}
-                onRatioChange={(_, value) => dispatch(setItemRatio({
-                  gameTitleSlug: gameTitleSlug,
-                  index: i,
-                  value: value || 0,
-                }))}
-                closable={true}
-                onClose={() => dispatch(removeItem({
-                  gameTitleSlug: gameTitleSlug,
-                  item: item,
-                }))}
-              />;
-              return i === 0 ?
-                <HelpPopover
-                  isOpen={showHelp && helpIndexFallback === HelpIndex.ITEM_RATIO}
-                  header={t('help_popover.item_ratio.header')}
-                  body={t('help_popover.item_ratio.body')}
-                  onCloseBtnClick={() => dispatch(setShowHelp(false))}
-                  onPrevBtnClick={() => {
-                    dispatch(setItemsHelpIndex(HelpIndex.ADD_ITEM_BUTTON));
-                  }}
-                  onNextBtnClick={() => {
-                    navigate("../pricing");
-                  }}
-                  key={item.id}
-                >
-                  <ScaleFade in={true} initialScale={0.9}>
-                    {itemTemplate}
-                  </ScaleFade>
-                </HelpPopover>
-                :
-                <ScaleFade in={true} initialScale={0.9} key={item.id}>{itemTemplate}</ScaleFade>;
-            })}
+            {gachaRequestForm.items.map((item, i) => (
+              <ConditionalHelpPopover
+                show={i === 0}
+                isOpen={showHelp && helpIndexFallback === HelpIndex.ITEM_RATIO}
+                header={t('help_popover.item_ratio.header')}
+                body={t('help_popover.item_ratio.body')}
+                onCloseBtnClick={() => dispatch(setShowHelp(false))}
+                onPrevBtnClick={() => {
+                  dispatch(setItemsHelpIndex(HelpIndex.ADD_ITEM_BUTTON));
+                }}
+                onNextBtnClick={() => {
+                  navigate("../pricing");
+                }}
+                key={item.id}
+              >
+                <ScaleFade in={true} initialScale={0.9}>
+                  <Item
+                    {...item}
+                    tierName={item.tier.shortName}
+                    ratioEditable={true}
+                    ratioMin={0}
+                    ratioMax={10000}
+                    onRatioChange={(_, value) => dispatch(setItemRatio({
+                      gameTitleSlug: gameTitleSlug,
+                      index: i,
+                      value: value || 0,
+                    }))}
+                    closable={true}
+                    onClose={() => dispatch(removeItem({
+                      gameTitleSlug: gameTitleSlug,
+                      item: item,
+                    }))}
+                  />
+                </ScaleFade>
+              </ConditionalHelpPopover>
+            ))}
           </SimpleGrid>
           <ItemDrawer
             gameTitleSlug={gameTitleSlug}

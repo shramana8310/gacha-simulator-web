@@ -44,7 +44,7 @@ import Tier from './Tier';
 import ItemDrawer from './ItemDrawer';
 import TierDrawer from './TierDrawer';
 import { useGachaRequestForm } from '../utils/gachaHooks';
-import HelpPopover from './HelpPopover';
+import HelpPopover, { ConditionalHelpPopover } from './HelpPopover';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
 import NavigationButtons from './NavigationButtons';
 import { useAuth } from "../auth/AuthContext";
@@ -337,43 +337,42 @@ export default function PlanForm() {
           </FormControl>
 
           <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
-          {filteredWantedItems.map((wantedItem, i) => {
-            const itemTemplate = <Item 
-              {...wantedItem}
-              tierName={wantedItem.tier.shortName}
-              numberEditable={true}
-              numberMin={1}
-              numberMax={10000}
-              onNumberChange={(_, value) => dispatch(setWantedItemNumber({
-                gameTitleSlug: gameTitleSlug,
-                index: gachaRequestForm.plan.wantedItems.findIndex((wantedItemToBeFound) => wantedItemToBeFound.id === wantedItem.id),
-                value: value || 0,
-              }))}
-              closable={true}
-              onClose={() => dispatch(removeWantedItem({
-                gameTitleSlug: gameTitleSlug,
-                wantedItem: wantedItem,
-              }))}
-            />;
-            return i === 0 ? 
-              <HelpPopover
-                isOpen={showHelp && helpIndexFallback === HelpIndex.ITEM_NUMBER}
-                header={t('help_popover.item_number.header')}
-                body={t('help_popover.item_number.body')}
-                onCloseBtnClick={() => dispatch(setShowHelp(false))}
-                onPrevBtnClick={() => {
-                  dispatch(setPlanHelpIndex(HelpIndex.ITEM_ADD));
-                }}
-                onNextBtnClick={() => {
-                  dispatch(setPlanHelpIndex(HelpIndex.TIER_GOALS));
-                }}
-                key={wantedItem.id}
-              >
-                <ScaleFade in={true} initialScale={0.9}>{itemTemplate}</ScaleFade>
-              </HelpPopover> 
-              : 
-              <ScaleFade in={true} initialScale={0.9} key={wantedItem.id}>{itemTemplate}</ScaleFade>;
-            })}
+          {filteredWantedItems.map((wantedItem, i) => (
+            <ConditionalHelpPopover
+              show={i === 0}
+              isOpen={showHelp && helpIndexFallback === HelpIndex.ITEM_NUMBER}
+              header={t('help_popover.item_number.header')}
+              body={t('help_popover.item_number.body')}
+              onCloseBtnClick={() => dispatch(setShowHelp(false))}
+              onPrevBtnClick={() => {
+                dispatch(setPlanHelpIndex(HelpIndex.ITEM_ADD));
+              }}
+              onNextBtnClick={() => {
+                dispatch(setPlanHelpIndex(HelpIndex.TIER_GOALS));
+              }}
+              key={wantedItem.id}
+            >
+              <ScaleFade in={true} initialScale={0.9}>
+                <Item 
+                  {...wantedItem}
+                  tierName={wantedItem.tier.shortName}
+                  numberEditable={true}
+                  numberMin={1}
+                  numberMax={10000}
+                  onNumberChange={(_, value) => dispatch(setWantedItemNumber({
+                    gameTitleSlug: gameTitleSlug,
+                    index: gachaRequestForm.plan.wantedItems.findIndex((wantedItemToBeFound) => wantedItemToBeFound.id === wantedItem.id),
+                    value: value || 0,
+                  }))}
+                  closable={true}
+                  onClose={() => dispatch(removeWantedItem({
+                    gameTitleSlug: gameTitleSlug,
+                    wantedItem: wantedItem,
+                  }))}
+                />
+              </ScaleFade>
+            </ConditionalHelpPopover>
+          ))}
           </SimpleGrid>
 
           <ItemDrawer
@@ -467,40 +466,39 @@ export default function PlanForm() {
           </FormControl>
 
           <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
-          {filteredWantedTiers.map((wantedTier, i) => {
-            const tierTemplate = <Tier 
-              {...wantedTier}
-              numberEditable={true}
-              numberMin={1}
-              numberMax={10000}
-              onNumberChange={(_, value) => dispatch(setWantedTierNumber({
-                gameTitleSlug: gameTitleSlug,
-                index: gachaRequestForm.plan.wantedTiers.findIndex((wantedTierToBeFound) => wantedTierToBeFound.id === wantedTier.id),
-                value: value || 0,
-              }))}
-              closable={true}
-              onClose={() => dispatch(removeWantedTier({
-                gameTitleSlug: gameTitleSlug,
-                wantedTier: wantedTier,
-              }))}
-            />;
-            return i === 0 ? 
-              <HelpPopover
-                isOpen={showHelp && helpIndexFallback === HelpIndex.TIER_NUMBER}
-                header={t('help_popover.tier_number.header')}
-                body={t('help_popover.tier_number.body')}
-                onCloseBtnClick={() => dispatch(setShowHelp(false))}
-                onPrevBtnClick={() => {
-                  dispatch(setPlanHelpIndex(HelpIndex.TIER_ADD));
-                }}
-                isNextBtnDisabled={true}
-                key={wantedTier.id}
-              >
-                <ScaleFade in={true} initialScale={0.9}>{tierTemplate}</ScaleFade>
-              </HelpPopover>
-              :
-              <ScaleFade in={true} initialScale={0.9} key={wantedTier.id}>{tierTemplate}</ScaleFade>;
-          })}
+          {filteredWantedTiers.map((wantedTier, i) => (
+            <ConditionalHelpPopover
+              show={i === 0}
+              isOpen={showHelp && helpIndexFallback === HelpIndex.TIER_NUMBER}
+              header={t('help_popover.tier_number.header')}
+              body={t('help_popover.tier_number.body')}
+              onCloseBtnClick={() => dispatch(setShowHelp(false))}
+              onPrevBtnClick={() => {
+                dispatch(setPlanHelpIndex(HelpIndex.TIER_ADD));
+              }}
+              isNextBtnDisabled={true}
+              key={wantedTier.id}
+            >
+              <ScaleFade in={true} initialScale={0.9}>
+                <Tier 
+                  {...wantedTier}
+                  numberEditable={true}
+                  numberMin={1}
+                  numberMax={10000}
+                  onNumberChange={(_, value) => dispatch(setWantedTierNumber({
+                    gameTitleSlug: gameTitleSlug,
+                    index: gachaRequestForm.plan.wantedTiers.findIndex((wantedTierToBeFound) => wantedTierToBeFound.id === wantedTier.id),
+                    value: value || 0,
+                  }))}
+                  closable={true}
+                  onClose={() => dispatch(removeWantedTier({
+                    gameTitleSlug: gameTitleSlug,
+                    wantedTier: wantedTier,
+                  }))}
+                />
+              </ScaleFade>
+            </ConditionalHelpPopover>
+          ))}
           </SimpleGrid>
 
           <TierDrawer

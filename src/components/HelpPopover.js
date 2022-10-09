@@ -46,3 +46,11 @@ export default function HelpPopover({
     </Popover>
   </>;
 };
+
+export const ConditionalHelpPopover = ({children, show, ...rest}) => {
+  if (show) {
+    return <HelpPopover {...rest}>{children}</HelpPopover>
+  } else {
+    return <>{children}</>;
+  }
+}

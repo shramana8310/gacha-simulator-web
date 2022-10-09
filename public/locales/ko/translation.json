@@ -200,7 +200,7 @@
         "fetch_fail_public_switch": "공개 설정 변경을 실패했습니다.",
         "fetch_fail_gacha": "가챠 실행을 실패했습니다.",
         "url_copy_fail": "URL {{url}} 을 복사할 수 없습니다.",
-        "tiers_empty": "티어 정보가 로드되지 않았습니다..",
+        "tiers_empty": "티어 정보가 로드되지 않았습니다.",
         "tier_ratio_zero": "티어 비율의 합계가 0 입니다.",
         "items_empty": "아이템이 선택되지 않았습니다.",
         "items_too_large": "아이템 수가 너무 많습니다.",

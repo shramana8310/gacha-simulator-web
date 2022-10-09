@@ -210,5 +210,7 @@
         "wanted_item_empty": "Wanted item is not selected.",
         "wanted_tier_empty": "Wanted tier is not selected.",
         "gachas_zero": "The number of gachas you can pull is effectively zero."
-    }
+    },
+
+    "disclaimer": "The author of this website is not affiliated with any of the game titles listed in this website. All assets were taken from third party websites. All product names, logos, images and brands are property of their respective owners. If you are affiliated with any of the game titles listed in this website and you want a particular game title taken down from this website, please kindly send me an email via {{email}} and I shall do so as soon as possible."
 }

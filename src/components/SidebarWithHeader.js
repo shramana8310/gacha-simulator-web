@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
 import {
   IconButton,
   Box,
   CloseButton,
   Flex,
-  HStack,
   Icon,
   useColorModeValue,
   Link,
@@ -12,23 +10,20 @@ import {
   DrawerContent,
   Text,
   useDisclosure,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
   Skeleton,
-  useColorMode,
+  ButtonGroup,
+  Spacer,
 } from '@chakra-ui/react';
 import { 
   HamburgerIcon,
 } from '@chakra-ui/icons';
 import { useNavigate, useParams } from "react-router-dom";
-import { FiGlobe, FiMoon, FiSun } from 'react-icons/fi';
-import i18next from 'i18next';
 import { useDispatch } from 'react-redux';
 import { clearGameTitleCache } from '../utils/gameTitleSlice';
 import { initializeGachaRequestForm } from '../utils/gachaRequestFormSlice';
 import { useTranslation } from 'react-i18next';
+import ColorModeToggleButton from './ColorModeToggleButton';
+import LanguageMenu from './LanguageMenu';
 
 export default function SidebarWithHeader({ linkItems, loaded, title, children }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,6 +66,7 @@ const SidebarContent = ({ loaded, title, onClose, linkItems, ...rest }) => {
       w={{ base: 'full', md: 60 }}
       pos="fixed"
       h="full"
+      overflowY="auto"
       {...rest}>
       <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
         <Skeleton isLoaded={loaded}>
@@ -129,13 +125,6 @@ const NavItem = ({ icon, to, children, onClose, ...rest }) => {
 const MobileNav = ({ loaded, title, onOpen, ...rest }) => {
   const dispatch = useDispatch();
   const { gameTitleSlug } = useParams();
-  const { colorMode, toggleColorMode } = useColorMode();
-  const supportedLanguages = [
-    {lng: 'en', name: 'English'},
-    {lng: 'ko', name: '한국어'},
-    {lng: 'ja', name: '日本語'},
-  ];
-  const [detectedLanguage, setDetectedLanguage] = useState(supportedLanguages.find(language => i18next.resolvedLanguage === language.lng));
   const { t } = useTranslation();
   return (
     <Flex
@@ -145,8 +134,10 @@ const MobileNav = ({ loaded, title, onOpen, ...rest }) => {
       alignItems="center"
       borderBottomWidth="1px"
       borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
-      justifyContent={{ base: 'space-between', md: 'flex-end' }}
-      {...rest}>
+      gap={4}
+      {...rest}
+    >
+
       <IconButton
         display={{ base: 'flex', md: 'none' }}
         onClick={onOpen}
@@ -164,35 +155,16 @@ const MobileNav = ({ loaded, title, onOpen, ...rest }) => {
         </Text>
       </Skeleton>
 
-      <HStack>
-        <IconButton 
-          variant="ghost"
-          onClick={toggleColorMode}
-          icon={colorMode === 'light' ? <FiMoon /> : <FiSun />}
-        />
-        <Flex alignItems={'center'}>
-          <Menu>
-            <MenuButton
-              py={2}
-              transition="all 0.3s">
-              <HStack>
-                <FiGlobe />
-                {detectedLanguage && <Text fontSize="sm">{detectedLanguage.name}</Text>}
-              </HStack>
-            </MenuButton>
-            <MenuList borderColor={useColorModeValue('gray.200', 'gray.700')}>
-              {supportedLanguages
-                .filter(language => language.lng !== i18next.language)
-                .map(language => (<MenuItem key={language.lng} onClick={() => {
-                  i18next.changeLanguage(language.lng);
-                  setDetectedLanguage(language);
-                  dispatch(clearGameTitleCache());
-                  dispatch(initializeGachaRequestForm(gameTitleSlug));
-                }}>{language.name}</MenuItem>))}
-            </MenuList>
-          </Menu>
-        </Flex>
-      </HStack>
+      <Spacer />
+
+      <ButtonGroup gap='2'>
+        <ColorModeToggleButton />
+        <LanguageMenu onLanguageChange={() => {
+          dispatch(clearGameTitleCache());
+          dispatch(initializeGachaRequestForm(gameTitleSlug));
+        }} />
+      </ButtonGroup>
+
     </Flex>
   );
 };

@@ -10,6 +10,7 @@ import { useAuth } from "../auth/AuthContext";
 import ReloadButton from "./ReloadButton";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
+import Footer from "./Footer";
 
 const GachaRequestFormTemplate = ({ loaded, title, children }) => {
   const { t } = useTranslation();
@@ -66,6 +67,7 @@ const GachaRequestFormTemplate = ({ loaded, title, children }) => {
     <Container maxW={'5xl'}>
       {children}
     </Container>
+    <Footer />
   </SidebarWithHeader>;
 };
 

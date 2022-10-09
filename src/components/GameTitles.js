@@ -2,11 +2,14 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AspectRatio,
+  ButtonGroup,
   Center,
   Container,
+  Flex,
   Heading,
   Image,
   SimpleGrid,
+  Spacer,
   Spinner,
   Stack,
   Text,
@@ -18,6 +21,9 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/AuthContext";
 import ReloadButton from "./ReloadButton";
 import i18next from "i18next";
+import Footer from "./Footer";
+import ColorModeToggleButton from "./ColorModeToggleButton";
+import LanguageMenu from "./LanguageMenu";
 
 const GameTitle = ({ 
   name, 
@@ -45,11 +51,21 @@ const GameTitle = ({
 const GameTitlesTemplate = ({children}) => {
   const { t } = useTranslation();
   return (
-    <Container maxW={'6xl'} p={5}>
-      <Stack spacing={20}>
-        <Center><Heading>{t('gacha_simulator')}</Heading></Center>
+    <Container maxW={'5xl'} p={5}>
+      <Stack spacing={10}>
+        <Flex alignItems='center' gap='2'>
+          <Spacer />
+          <Spacer />
+          <Heading size='lg' noOfLines={1}>{t('gacha_simulator')}</Heading>
+          <Spacer />
+          <ButtonGroup gap='2'>
+            <ColorModeToggleButton />
+            <LanguageMenu />
+          </ButtonGroup>
+        </Flex>
         {children}
       </Stack>
+      <Footer />
     </Container>
   );
 };

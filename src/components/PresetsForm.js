@@ -39,8 +39,9 @@ const Preset = ({preset, ...rest}) => {
       boxShadow='lg'
       p={3}
       {...rest}
+      alignItems='center'
     >
-      <Heading size='md'>{name}</Heading>
+      <Heading size='md' textAlign='center'>{name}</Heading>
       <Text noOfLines={3}>{description}</Text>
     </Stack>
   )

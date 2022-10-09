@@ -34,7 +34,7 @@ export default function App() {
 
   useEffect(() => {
     authService.init();
-  }, []);
+  }, [authService]);
 
   if (!authenticated) {
     return (

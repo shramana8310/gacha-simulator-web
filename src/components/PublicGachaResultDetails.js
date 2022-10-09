@@ -8,10 +8,14 @@ import { useParams } from "react-router-dom";
 import GachaResult from "./GachaResult";
 import NotFoundPage from "./NotFoundPage";
 import ReloadButton from "./ReloadButton";
+import Footer from "./Footer";
 
 const PublicGachaResultDetailsTemplate = ({children}) => {
   return (
-    <Container maxW={'6xl'} p={10}>{children}</Container>
+    <>
+      <Container maxW={'6xl'} p={10}>{children}</Container>
+      <Footer />
+    </>
   );
 };
 

@@ -10,12 +10,13 @@ import theme from './theme';
 import './i18n';
 import App from "./App";
 
+const timeout = (process.env.REACT_APP_AUTH_TIMEOUT && parseInt(process.env.REACT_APP_AUTH_TIMEOUT)) || 20000;
 const authService = new AuthService({
   clientId: process.env.REACT_APP_CLIENT_ID,
   provider: `${window.location.origin}/api`,
   redirectUri: window.location.origin,
   autoRefresh: true,
-  timeout: 5000,
+  timeout: timeout,
 });
 
 const container = document.getElementById('root');

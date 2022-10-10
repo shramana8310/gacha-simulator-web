@@ -25,8 +25,10 @@ import { useTranslation } from "react-i18next";
 
 const DEBOUNCE_MILISECONDS = 500;
 
-function escapeRegExp(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function matchesSome(keyword, ...args) {
+  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(escaped, 'gi');
+  return args.some((arg) => regex.test(arg));
 }
 
 export default function ItemDrawer({
@@ -127,7 +129,7 @@ export default function ItemDrawer({
           <SimpleGrid marginTop={5} columns={{base: 2, md: 3, lg: 4}} spacing={2}>
             {items
             .map((item, i) => {
-              if (!fetchItems && !new RegExp(`${escapeRegExp(keyword)}`, 'gi').test(item.name)) {
+              if (!fetchItems && !matchesSome(keyword, item.name, item.shortName)) {
                 return <Fragment key={item.id}></Fragment>;
               }
               if (selectMultipleItems) {

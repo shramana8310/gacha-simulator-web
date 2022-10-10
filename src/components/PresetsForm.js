@@ -19,7 +19,8 @@ import {
   setTiers, 
   setTiersLoaded, 
   setCustomizeItems, 
-  setItems 
+  setItems, 
+  setInitialTiers
 } from '../utils/gachaRequestFormSlice';
 import { useGachaRequestForm } from '../utils/gachaHooks';
 import { useAuth } from "../auth/AuthContext";
@@ -87,14 +88,20 @@ export default function PresetsForm() {
         gameTitleSlug: gameTitleSlug,
         value: false,
       }));
-      dispatch(setTiers({
-        gameTitleSlug: gameTitleSlug,
-        tiers: presetsResponse.tiers,
-      }));
-      dispatch(setTiersLoaded({
-        gameTitleSlug: gameTitleSlug,
-        value: true,
-      }));
+      if (!gachaRequestForm.tiersLoaded) {
+        dispatch(setInitialTiers({
+          gameTitleSlug: gameTitleSlug,
+          initialTiers: presetsResponse.tiers,
+        }));
+        dispatch(setTiers({
+          gameTitleSlug: gameTitleSlug,
+          tiers: presetsResponse.tiers,
+        }));
+        dispatch(setTiersLoaded({
+          gameTitleSlug: gameTitleSlug,
+          value: true,
+        }));
+      }
     })
     .catch(() => {
       dispatch(setPresetsLoaded({
@@ -111,9 +118,13 @@ export default function PresetsForm() {
         isClosable: true,
       });
     });
-  }, [authService, dispatch, gameTitleSlug, t, toast]);
+  }, [gachaRequestForm.tiersLoaded, authService, dispatch, gameTitleSlug, t, toast]);
 
   const handlePresetClick = ({pricing, policies, plan}) => {
+    dispatch(setTiers({
+      gameTitleSlug: gameTitleSlug,
+      tiers: gachaRequestForm.initialTiers,
+    }));
     dispatch(setCustomizeItems({
       gameTitleSlug: gameTitleSlug,
       value: false,

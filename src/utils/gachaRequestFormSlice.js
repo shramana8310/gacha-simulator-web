@@ -19,6 +19,7 @@ export const gachaRequestFormSlice = createSlice({
     initializeGachaRequestForm: ({ gachaRequestFormMap }, { payload }) => {
       gachaRequestFormMap[payload] = {
         presets: [],
+        initialTiers: [],
         tiers: [],
         customizeItems: false,
         items: [],
@@ -59,6 +60,9 @@ export const gachaRequestFormSlice = createSlice({
 
     setPresets: ({ gachaRequestFormMap }, { payload }) => {
       gachaRequestFormMap[payload.gameTitleSlug].presets = payload.presets;
+    },
+    setInitialTiers: ({ gachaRequestFormMap }, { payload }) => {
+      gachaRequestFormMap[payload.gameTitleSlug].initialTiers = payload.initialTiers;
     },
     setTiers: ({ gachaRequestFormMap }, { payload }) => {
       gachaRequestFormMap[payload.gameTitleSlug].tiers = payload.tiers;
@@ -217,6 +221,7 @@ export const {
   initializeGachaRequestFormMap,
   initializeGachaRequestForm, 
   setPresets,
+  setInitialTiers,
   setTiers, 
   setItems,
   setPricingPresets,

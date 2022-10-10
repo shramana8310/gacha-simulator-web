@@ -21,11 +21,13 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Text,
-  Divider, 
+  Divider,
+  Spacer,
+  Button, 
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { setShowHelp, setTierRatio, setTiers, setTiersLoaded, setTiersError } from '../utils/gachaRequestFormSlice';
+import { setShowHelp, setTierRatio, setTiers, setTiersLoaded, setTiersError, setInitialTiers } from '../utils/gachaRequestFormSlice';
 import { useGachaRequestForm } from '../utils/gachaHooks';
 import { ConditionalHelpPopover } from './HelpPopover';
 import ValidationErrorAlerts from './ValidationErrorAlerts';
@@ -70,6 +72,10 @@ export default function TierForm() {
       return response.json();
     })
     .then(tiers => {
+      dispatch(setInitialTiers({
+        gameTitleSlug: gameTitleSlug,
+        initialTiers: tiers,
+      }));
       dispatch(setTiers({
         gameTitleSlug: gameTitleSlug,
         tiers: tiers,
@@ -99,6 +105,13 @@ export default function TierForm() {
       });
     });
   }, [authService, dispatch, gameTitleSlug, t, toast]);
+
+  const handleResetClick = () => {
+    dispatch(setTiers({
+      gameTitleSlug: gameTitleSlug,
+      tiers: gachaRequestForm.initialTiers,
+    }));
+  };
 
   useEffect(() => {
     if (!gachaRequestForm.tiersLoaded) {
@@ -205,6 +218,11 @@ export default function TierForm() {
               <StatHelpText>{t('formatted_integer', {integer: tierEntry.tier.ratio})} / {t('formatted_integer', {integer: tierEntry.tierRatioSum})}</StatHelpText>
             </Stat>)}
         </SimpleGrid>
+        <Flex>
+          <Spacer />
+          <Button onClick={handleResetClick}>{t('reset')}</Button>
+          <Spacer />
+        </Flex>
       </Stack>
       <Divider />
       <NavigationButtons prevBtnDisabled nextBtnLink="../items" />

@@ -104,6 +104,7 @@
 
     "formatted_integer": "{{integer, number}}",
     "formatted_percentage": "{{val, number(style: percent; maximumFractionDigits: 2)}}",
+    "formatted_datetime": "{{val, datetime(dateStyle: short; timeStyle: medium)}}",
 
     "gacha_result_of_game_title": "{{gameTitle, string}} 가챠 결과",
 

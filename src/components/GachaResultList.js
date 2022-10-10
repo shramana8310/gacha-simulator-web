@@ -70,7 +70,7 @@ const GachaResultBox = ({gachaResult, ...rest}) => {
         <Divider />
         <UnorderedList styleType='none' textAlign={'start'}>
           <ListItem><Text fontSize='xs' color='gray.500'>{t('id')}: {id}</Text></ListItem>
-          <ListItem><Text fontSize='xs' color='gray.500'>{new Date(time).toLocaleString()}</Text></ListItem>
+          <ListItem><Text fontSize='xs' color='gray.500'>{t('formatted_datetime', {val: new Date(time)})}</Text></ListItem>
         </UnorderedList>
       </Stack>
     </Box>

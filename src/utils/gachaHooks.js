@@ -235,7 +235,7 @@ export const useGachaResultShareCallbacks = ({
     } else {
       share();
     }
-  }, [gachaResult, togglePublic, t]);
+  }, [gachaResult, togglePublic, t, toast]);
   return {
     togglePublic,
     shareGacha,

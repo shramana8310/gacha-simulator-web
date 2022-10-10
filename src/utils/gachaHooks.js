@@ -206,11 +206,30 @@ export const useGachaResultShareCallbacks = ({
     });
   }, [gachaResult, authService, i18next, setUpdating, setGachaResult, toast, t]);
   const shareGacha = useCallback(() => {
-    const share = () => navigator.share({
-      title: t('gacha_simulator_shared_result_title'),
-      text: t('gacha_simulator_shared_result_text'), 
-      url: `${window.location.origin}/results/${gachaResult.id}`,
-    });
+    const share = () => {
+      const url = `${window.location.origin}/results/${gachaResult.id}`;
+      if (navigator.share) {
+        return navigator.share({
+          title: t('gacha_simulator_shared_result_title'),
+          text: t('gacha_simulator_shared_result_text'), 
+          url: url,
+        });
+      }
+      if (navigator.clipboard) {
+        return navigator.clipboard.writeText(url).then(() => {
+          toast({
+            title: t('url_copied'),
+            status: 'success',
+            isClosable: true,
+          });
+        });
+      }
+      return new Promise((resolve) => {
+        const message = `${t('gacha_simulator_shared_result_text')}: \n${url}`;
+        alert(message);
+        resolve();
+      });
+    };
     if (!gachaResult.public) {
       togglePublic().then(share);
     } else {

@@ -258,7 +258,7 @@ export default function PoliciesForm() {
                 <Box w='xs'>
                   <ScaleFade in={true} initialScale={0.9}>
                     <Item 
-                      {...pityItem} 
+                      item={pityItem} 
                       tierName={pityItem.tier.shortName}>
                       <Text>{pityItem.name}</Text>
                     </Item>

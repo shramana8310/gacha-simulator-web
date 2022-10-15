@@ -48,7 +48,7 @@ export default function TierDrawer({
             {checkableTiers.map((tier, i) => 
               <ScaleFade initialScale={0.9} in={true} key={tier.id}>
                 <Tier
-                  {...tier}
+                  tier={tier}
                   checkable={true}
                   checked={tier.checked}
                   onCheck={() => setCheckableTiers([

@@ -17,10 +17,10 @@ import {
 import { 
   HamburgerIcon,
 } from '@chakra-ui/icons';
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import { clearGameTitleCache } from '../utils/gameTitleSlice';
-import { initializeGachaRequestForm } from '../utils/gachaRequestFormSlice';
+import { initializeGachaRequestFormMap } from '../utils/gachaRequestFormSlice';
 import { useTranslation } from 'react-i18next';
 import ColorModeToggleButton from './ColorModeToggleButton';
 import LanguageMenu from './LanguageMenu';
@@ -124,7 +124,7 @@ const NavItem = ({ icon, to, children, onClose, ...rest }) => {
 
 const MobileNav = ({ loaded, title, onOpen, ...rest }) => {
   const dispatch = useDispatch();
-  const { gameTitleSlug } = useParams();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   return (
     <Flex
@@ -159,10 +159,14 @@ const MobileNav = ({ loaded, title, onOpen, ...rest }) => {
 
       <ButtonGroup gap='2'>
         <ColorModeToggleButton />
-        <LanguageMenu onLanguageChange={() => {
-          dispatch(clearGameTitleCache());
-          dispatch(initializeGachaRequestForm(gameTitleSlug));
-        }} />
+        <LanguageMenu 
+          confirmBeforeLanguageChange={true}
+          onLanguageChange={() => {
+            dispatch(clearGameTitleCache());
+            dispatch(initializeGachaRequestFormMap());
+            navigate('./presets');
+          }}
+        />
       </ButtonGroup>
 
     </Flex>

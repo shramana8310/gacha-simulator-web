@@ -354,22 +354,33 @@ export default function PlanForm() {
             >
               <ScaleFade in={true} initialScale={0.9}>
                 <Item 
-                  {...wantedItem}
-                  tierName={wantedItem.tier.shortName}
-                  numberEditable={true}
-                  numberMin={1}
-                  numberMax={10000}
-                  onNumberChange={(_, value) => dispatch(setWantedItemNumber({
-                    gameTitleSlug: gameTitleSlug,
-                    index: gachaRequestForm.plan.wantedItems.findIndex((wantedItemToBeFound) => wantedItemToBeFound.id === wantedItem.id),
-                    value: value || 0,
-                  }))}
+                  item={wantedItem}
                   closable={true}
                   onClose={() => dispatch(removeWantedItem({
                     gameTitleSlug: gameTitleSlug,
                     wantedItem: wantedItem,
                   }))}
-                />
+                >
+                  <FormControl>
+                    <FormLabel>{t('number')}</FormLabel>
+                    <NumberInput 
+                      value={wantedItem.number} 
+                      onChange={(_, value) => dispatch(setWantedItemNumber({
+                        gameTitleSlug: gameTitleSlug,
+                        index: gachaRequestForm.plan.wantedItems.findIndex((wantedItemToBeFound) => wantedItemToBeFound.id === wantedItem.id),
+                        value: value || 0,
+                      }))} 
+                      min={1} 
+                      max={10000}
+                    >
+                      <NumberInputField  />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </FormControl>
+                </Item>
               </ScaleFade>
             </ConditionalHelpPopover>
           ))}
@@ -481,21 +492,33 @@ export default function PlanForm() {
             >
               <ScaleFade in={true} initialScale={0.9}>
                 <Tier 
-                  {...wantedTier}
-                  numberEditable={true}
-                  numberMin={1}
-                  numberMax={10000}
-                  onNumberChange={(_, value) => dispatch(setWantedTierNumber({
-                    gameTitleSlug: gameTitleSlug,
-                    index: gachaRequestForm.plan.wantedTiers.findIndex((wantedTierToBeFound) => wantedTierToBeFound.id === wantedTier.id),
-                    value: value || 0,
-                  }))}
+                  tier={wantedTier}
                   closable={true}
                   onClose={() => dispatch(removeWantedTier({
                     gameTitleSlug: gameTitleSlug,
                     wantedTier: wantedTier,
                   }))}
-                />
+                >
+                  <FormControl>
+                    <FormLabel>{t('number')}</FormLabel>
+                    <NumberInput 
+                      value={wantedTier.number} 
+                      onChange={(_, value) => dispatch(setWantedTierNumber({
+                        gameTitleSlug: gameTitleSlug,
+                        index: gachaRequestForm.plan.wantedTiers.findIndex((wantedTierToBeFound) => wantedTierToBeFound.id === wantedTier.id),
+                        value: value || 0,
+                      }))} 
+                      min={1} 
+                      max={10000}
+                    >
+                      <NumberInputField  />
+                      <NumberInputStepper>
+                        <NumberIncrementStepper />
+                        <NumberDecrementStepper />
+                      </NumberInputStepper>
+                    </NumberInput>
+                  </FormControl>
+                </Tier>
               </ScaleFade>
             </ConditionalHelpPopover>
           ))}

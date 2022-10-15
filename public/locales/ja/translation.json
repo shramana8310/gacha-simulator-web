@@ -100,6 +100,16 @@
     "count": "数",
     "percentage": "パーセンテージ",
 
+    "en": "英語",
+    "ko": "韓国語",
+    "ja": "日本語",
+
+    "change_language": "言語を{{language}}に変更",
+    "change_language_confirm": "編集中の内容が失われます。よろしいですか。",
+
+    "yes": "はい",
+    "no": "いいえ",
+
     "not_found": "お探しのものが見つかりません",
 
     "formatted_integer": "{{integer, number}}",

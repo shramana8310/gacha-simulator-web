@@ -100,6 +100,16 @@
     "count": "Count",
     "percentage": "Percentage",
 
+    "en": "English",
+    "ko": "Korean",
+    "ja": "Japanese",
+
+    "change_language": "Change language to {{language}}?",
+    "change_language_confirm": "Your changes will be lost. Are you sure?",
+
+    "yes": "Yes",
+    "no": "No",
+
     "not_found": "Not found.",
 
     "formatted_integer": "{{integer, number}}",

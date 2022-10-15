@@ -136,8 +136,7 @@ export default function ItemDrawer({
                 return (
                   <Item
                     key={item.id}
-                    {...item}
-                    tierName={item.tier.shortName}
+                    item={item}
                     checkable={true}
                     checked={item.checked}
                     onCheck={() => setItems([
@@ -168,7 +167,7 @@ export default function ItemDrawer({
                       onItemSelect(item);
                     }}
                   >
-                    <Item {...item} tierName={item.tier.shortName} />
+                    <Item item={item} />
                   </Box>
                 );
               }

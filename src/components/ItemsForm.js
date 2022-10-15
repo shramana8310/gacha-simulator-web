@@ -12,6 +12,11 @@ import {
   Spacer,
   Flex,
   Divider,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux';
 import Item from "./Item"
@@ -132,22 +137,33 @@ export default function ItemsForm() {
               >
                 <ScaleFade in={true} initialScale={0.9}>
                   <Item
-                    {...item}
-                    tierName={item.tier.shortName}
-                    ratioEditable={true}
-                    ratioMin={0}
-                    ratioMax={10000}
-                    onRatioChange={(_, value) => dispatch(setItemRatio({
-                      gameTitleSlug: gameTitleSlug,
-                      index: i,
-                      value: value || 0,
-                    }))}
+                    item={item}
                     closable={true}
                     onClose={() => dispatch(removeItem({
                       gameTitleSlug: gameTitleSlug,
                       item: item,
                     }))}
-                  />
+                  >
+                    <FormControl>
+                      <FormLabel>{t('ratio')}</FormLabel>
+                      <NumberInput 
+                        value={item.ratio} 
+                        onChange={(_, value) => dispatch(setItemRatio({
+                          gameTitleSlug: gameTitleSlug,
+                          index: i,
+                          value: value || 0,
+                        }))} 
+                        min={0} 
+                        max={10000}
+                      >
+                        <NumberInputField />
+                        <NumberInputStepper>
+                          <NumberIncrementStepper />
+                          <NumberDecrementStepper />
+                        </NumberInputStepper>
+                      </NumberInput>
+                    </FormControl>
+                  </Item>
                 </ScaleFade>
               </ConditionalHelpPopover>
             ))}

@@ -187,8 +187,7 @@ export default function GachaResult({
       <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
         {itemEntries.slice(0, displayedItemsCount).map((itemEntry, i) => 
           <Item 
-            {...itemEntry.item} 
-            tierName={itemEntry.item.tier.shortName} 
+            item={itemEntry.item}
             emphasizeBorder={itemEntry.wantedItem} 
             borderColor={itemEntry.wantedItem ? 
               (itemEntry.count > 0 ? 
@@ -198,7 +197,6 @@ export default function GachaResult({
             key={i}
           >
             <Stat>
-              <StatLabel>{itemEntry.item.name}</StatLabel>
               <StatNumber color={itemEntry.wantedItem ? (itemEntry.count >= itemEntry.wantedCount ? 'green.300' : 'red.300') : undefined}>
                 {t('formatted_integer', {integer: itemEntry.count})} {itemEntry.wantedItem && ` / ${t('formatted_integer', {integer: itemEntry.wantedCount})}`}
               </StatNumber>

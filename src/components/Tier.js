@@ -2,57 +2,33 @@ import React from "react";
 import {
   Flex,
   Heading,
-  FormControl,
-  FormLabel,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Image,
   AspectRatio,
   CloseButton,
   Spacer,
   Stack,
-  Checkbox,
   HStack,
   Badge,
   Center,
 } from '@chakra-ui/react';
-import { useTranslation } from "react-i18next";
+import ConditionalCheckbox from "./ConditionalCheckbox";
 
 export default function Tier({
-  name,
-  shortName,
-  ratio,
-  imageUrl,
-  number,
+  tier = {
+    id: undefined,
+    ratio: undefined,
+    imageUrl: undefined,
+    name: undefined,
+    shortName: undefined,
+  },
   checkable,
   checked,
   onCheck,
   onUncheck,
   closable,
   onClose,
-  ratioEditable,
-  onRatioChange,
-  ratioMin,
-  ratioMax,
-  numberEditable,
-  onNumberChange,
-  numberMin,
-  numberMax,
   children,
 }) {
-  const { t } = useTranslation();
-
-  const tierNameTemplate = <>
-    <HStack>
-      <Heading size='sm' noOfLines={1} wordBreak='break-word'>{name}</Heading>
-      <Center>
-        <Badge>{shortName}</Badge>
-      </Center>
-    </HStack>
-  </>;
 
   return (
     <Stack
@@ -63,13 +39,14 @@ export default function Tier({
     >
       <Stack onClick={checked ? onUncheck : onCheck}>
         <Flex>
-          {checkable ?
-            <Checkbox isChecked={checked} onChange={checked ? onUncheck : onCheck}>
-              {tierNameTemplate}
-            </Checkbox>
-            :
-            tierNameTemplate
-          }
+          <ConditionalCheckbox checkable={checkable} checked={checked} onCheck={onCheck} onUncheck={onUncheck}>
+            <HStack>
+              <Heading size='sm' noOfLines={1} wordBreak='break-word'>{tier.name}</Heading>
+              <Center>
+                <Badge>{tier.shortName}</Badge>
+              </Center>
+            </HStack>
+          </ConditionalCheckbox>
           {closable && 
             <>
               <Spacer />
@@ -82,43 +59,9 @@ export default function Tier({
           onClick={checked ? onUncheck : onCheck} 
           _hover={{cursor: checkable ? 'pointer' : undefined}}
         >
-          <Image src={imageUrl} loading='lazy' />
+          <Image src={tier.imageUrl} loading='lazy' />
         </AspectRatio>
       </Stack>
-      {ratioEditable && 
-        <FormControl>
-          <FormLabel>{t('ratio')}</FormLabel>
-          <NumberInput 
-            value={ratio} 
-            onChange={onRatioChange} 
-            min={ratioMin} 
-            max={ratioMax}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        </FormControl>
-      }
-      {numberEditable && 
-        <FormControl>
-          <FormLabel>{t('number')}</FormLabel>
-          <NumberInput 
-            value={number} 
-            onChange={onNumberChange} 
-            min={numberMin} 
-            max={numberMax}
-          >
-            <NumberInputField  />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        </FormControl>
-      }
       {children}
     </Stack>
   );

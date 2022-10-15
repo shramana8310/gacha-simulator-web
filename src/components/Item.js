@@ -1,64 +1,39 @@
 import {
   Flex,
   Heading,
-  FormControl,
-  FormLabel,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Image,
   AspectRatio,
   Badge,
   CloseButton,
   Spacer,
   Stack,
-  Checkbox,
   Center,
-  Tooltip,
   HStack,
+  Text,
 } from '@chakra-ui/react';
-import { useTranslation } from 'react-i18next';
+import ConditionalCheckbox from './ConditionalCheckbox';
 
 export default function Item({
-  id,
-  name,
-  shortName,
-  tierName,
-  imageUrl,
-  ratio,
-  number,
+  item = {
+    id: undefined,
+    name: undefined,
+    shortName: undefined,
+    ratio: undefined,
+    imageUrl: undefined,
+    tier: {
+      shortName: undefined,
+    },
+  },
   checkable,
   checked,
   onCheck,
   onUncheck,
   closable,
   onClose,
-  ratioEditable,
-  onRatioChange,
-  ratioMin,
-  ratioMax,
-  numberEditable,
-  onNumberChange,
-  numberMin,
-  numberMax,
   emphasizeBorder,
   borderColor,
   children,
 }) {
-  const { t } = useTranslation();
-  const itemNameTemplate = <>
-    <HStack>
-      <Tooltip label={name}>
-        <Heading size='sm' noOfLines={1} wordBreak='break-word'>{shortName}</Heading>
-      </Tooltip>
-      <Center>
-        <Badge>{tierName}</Badge>
-      </Center>
-    </HStack>
-  </>;
-
   return (
     <Stack
       borderWidth={emphasizeBorder ? '2px' : '1px'} 
@@ -69,13 +44,14 @@ export default function Item({
     >
       <Stack>
         <Flex>
-          {checkable ?
-            <Checkbox isChecked={checked} onChange={checked ? onUncheck : onCheck}>
-              {itemNameTemplate}
-            </Checkbox>
-            :
-            itemNameTemplate
-          }
+          <ConditionalCheckbox checkable={checkable} checked={checked} onCheck={onCheck} onUncheck={onUncheck}>
+            <HStack>
+              <Heading size='sm' noOfLines={1} wordBreak='break-word'>{item.shortName}</Heading>
+              <Center>
+                <Badge>{item.tier.shortName}</Badge>
+              </Center>
+            </HStack>
+          </ConditionalCheckbox>
           {closable &&
             <>
               <Spacer />
@@ -88,43 +64,10 @@ export default function Item({
           onClick={checked ? onUncheck : onCheck} 
           _hover={{cursor: checkable ? 'pointer' : undefined}}
         >
-          <Image src={imageUrl} loading='lazy' />
+          <Image src={item.imageUrl} loading='lazy' />
         </AspectRatio>
+        <Text fontSize='sm'>{item.name}</Text>
       </Stack>
-      {ratioEditable && 
-        <FormControl>
-          <FormLabel>{t('ratio')}</FormLabel>
-          <NumberInput 
-            value={ratio} 
-            onChange={onRatioChange} 
-            min={ratioMin} 
-            max={ratioMax}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        </FormControl>
-      }
-      {numberEditable &&
-        <FormControl>
-          <FormLabel>{t('number')}</FormLabel>
-          <NumberInput 
-            value={number} 
-            onChange={onNumberChange} 
-            min={numberMin} 
-            max={numberMax}
-          >
-            <NumberInputField  />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        </FormControl>
-      }
       {children}
     </Stack>
   );

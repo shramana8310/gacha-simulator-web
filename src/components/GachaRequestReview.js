@@ -238,7 +238,7 @@ export default function GachaRequestReview() {
             <Stack>
               <Text>{t('pity_item_w_trigger', {count: gachaRequestForm.policies.pityTrigger})}</Text>
               <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
-                <Item {...gachaRequestForm.policies.pityItem} tierName={gachaRequestForm.policies.pityItem.tier.shortName} />
+                <Item item={gachaRequestForm.policies.pityItem} />
               </SimpleGrid>
             </Stack>
           }
@@ -247,7 +247,7 @@ export default function GachaRequestReview() {
             <Text>{t('wanted_items')}</Text>
             <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
               {filteredWantedItems.map(wantedItem => (
-                <Item key={wantedItem.id} {...wantedItem} tierName={wantedItem.tier.shortName}>
+                <Item key={wantedItem.id} item={wantedItem}>
                   <Stat>
                     <StatNumber>{wantedItem.number}</StatNumber>
                   </Stat>
@@ -260,7 +260,7 @@ export default function GachaRequestReview() {
               <Text>{t('wanted_tiers')}</Text>
               <SimpleGrid columns={{base: 2, md: 3, lg: 4}} spacing={2}>
                 {filteredWantedTiers.map(wantedTier => (
-                  <Tier key={wantedTier.id} {...wantedTier}>
+                  <Tier key={wantedTier.id} tier={wantedTier}>
                     <Stat>
                       <StatNumber>{wantedTier.number}</StatNumber>
                     </Stat>

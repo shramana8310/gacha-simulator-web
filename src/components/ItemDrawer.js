@@ -129,7 +129,7 @@ export default function ItemDrawer({
           <SimpleGrid marginTop={5} columns={{base: 2, md: 3, lg: 4}} spacing={2}>
             {items
             .map((item, i) => {
-              if (!fetchItems && !matchesSome(keyword, item.name, item.shortName)) {
+              if (!fetchItems && !matchesSome(keyword, item.name, item.shortName, item.shortNameAlt)) {
                 return <Fragment key={item.id}></Fragment>;
               }
               if (selectMultipleItems) {
